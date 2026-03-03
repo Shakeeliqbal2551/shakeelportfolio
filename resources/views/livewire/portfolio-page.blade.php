@@ -55,6 +55,118 @@
     <link rel="stylesheet" href="css/owl-carousel.css?ver=3" />
     <link rel="stylesheet" href="css/style.css?ver=3" />
 
+    <!-- Static Header Styles -->
+    <style>
+        .static-header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 9999;
+            background: #1d1b19;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            height: 64px;
+            display: flex;
+            align-items: center;
+        }
+        .header-inner {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            padding: 0 6.7%; /* 12% of 56vw left-panel ≈ 6.72% of viewport */
+        }
+        .header-logo {
+            display: flex;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .header-logo img {
+            height: 38px;
+            width: auto;
+            display: block;
+        }
+        .header-nav ul {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            gap: 24px;
+        }
+        .header-nav ul li a {
+            color: #999;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            font-family: 'Jost', sans-serif;
+            transition: color 0.25s;
+        }
+        .header-nav ul li a:hover {
+            color: #987750;
+        }
+        .header-cta {
+            background: #987750;
+            color: #fff !important;
+            padding: 8px 20px;
+            border-radius: 3px;
+            text-decoration: none !important;
+            font-size: 12px;
+            font-weight: 600;
+            letter-spacing: 0.6px;
+            text-transform: uppercase;
+            font-family: 'Jost', sans-serif;
+            transition: background 0.25s;
+            flex-shrink: 0;
+        }
+        .header-cta:hover {
+            background: #7d6240;
+        }
+        .static-header a.glow_button {
+            display: inline-block !important;
+            padding: 9px 22px !important;
+            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+            border-radius: 50px !important;
+            color: white !important;
+            text-decoration: none !important;
+            font-weight: 600 !important;
+            font-size: 13px !important;
+            animation: buttonGlow 3s ease-in-out infinite;
+            transition: transform 0.3s ease;
+            border: none !important;
+            white-space: nowrap !important;
+        }
+        .static-header a.glow_button:hover {
+            transform: translateY(-2px);
+        }
+        .static-header a.glow_button .circle {
+            display: none;
+        }
+        .static-header a.glow_button .text {
+            color: white !important;
+        }
+        .static-header a.glow_button:before {
+            display: none !important;
+        }
+        .resumo_fn_content {
+            padding-top: 64px !important;
+        }
+        /* Compensate for 64px header — reduce #home top padding by 64px (was 200px) */
+        #home { padding-top: 136px; }
+        @media (max-width: 1040px) {
+            /* left panel becomes 100vw, container padding is 8% → match header */
+            .header-inner { padding: 0 8%; }
+        }
+        @media (max-width: 900px) {
+            .header-nav { display: none; }
+        }
+        @media (max-width: 480px) {
+            .header-cta { display: none; }
+            .header-inner { padding: 0 10px; }
+        }
+    </style>
+
     <!-- Font Awesome -->
     <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
@@ -91,6 +203,32 @@
 
     <!-- Wrapper All -->
     <div class="resumo_fn_wrapper">
+
+        <!-- Static Header -->
+        <header class="static-header">
+            <div class="header-inner">
+                <div class="header-logo">
+                    <a href="#home">
+                        <img src="img/logo/logo.png" alt="Shakeel Iqbal Cheema" />
+                    </a>
+                </div>
+                <nav class="header-nav">
+                    <ul>
+                        <li><a href="#home">Home</a></li>
+                        <li><a href="#about">About</a></li>
+                        <li><a href="#portfolio">Portfolio</a></li>
+                        <li><a href="#services">Services</a></li>
+                        <li><a href="#customers">Testimonials</a></li>
+                        <li><a href="#contact">Contact</a></li>
+                    </ul>
+                </nav>
+                <a href="#contact" class="glow_button">
+                    <span class="circle"></span>
+                    <span class="text">Book a Free Consultation</span>
+                </a>
+            </div>
+        </header>
+        <!-- /Static Header -->
 
         <!-- MODALBOX -->
         <div class="resumo_fn_modalbox">
@@ -1606,17 +1744,6 @@
             <!-- Main Right Part -->
             <div class="resumo_fn_right">
 
-                <!-- Menu Triggger -->
-                <a href="#" class="menu_trigger">
-                    <span class="text">Menu</span>
-                    <span class="hamb">
-                        <span></span>
-                        <span></span>
-                        <span></span>
-                    </span>
-                </a>
-                <!-- /Menu Triggger -->
-
                 <!-- Panel Content -->
                 <div class="right_in">
                     <div class="right_top">
@@ -1640,12 +1767,7 @@
                             </h3>
                         </div>
                     </div>
-                    <div class="right_bottom">
-                        <a href="#contact" class="glow_button">
-                            <span class="circle"></span>
-                            <span class="text">Book a Free Consultation</span>
-                        </a>
-                    </div>
+                    <div class="right_bottom"></div>
 
 
                     <link rel="stylesheet"
@@ -1665,57 +1787,6 @@
 
         </div>
 
-        <!-- Right Hidden Navigation -->
-        <a href="#" class="resumo_fn_nav_overlay"></a>
-        <div class="resumo_fn_navigation">
-            <a href="#" class="closer"></a>
-
-            <!-- Navigation Content -->
-            <div class="nav_in">
-
-                <nav id="nav">
-                    <h3 class="label">Menu</h3>
-                    <ul>
-                        <li><a href="#home">Home</a></li>
-                        <li><a href="#about">About</a></li>
-                        <li><a href="#portfolio">Portfolio</a></li>
-                        <li><a href="#services">Services</a></li>
-                        <li><a href="#customers">Testimonials</a></li>
-                        <!--<li><a href="#news">News &amp; Tips</a></li>-->
-                        <li><a href="#contact">Contact</a></li>
-                    </ul>
-                </nav>
-
-                <div class="nav_footer">
-                    <div class="social">
-                        <ul>
-                            <!--<li>-->
-                            <!--    <a href="#" target="_blank"><img src="svg/social/twitter.svg" alt="" class="fn__svg"></a>-->
-                            <!--</li>-->
-                            <!--<li>-->
-                            <!--    <a href="#" target="_blank"><img src="svg/social/facebook.svg" alt="" class="fn__svg"></a>-->
-                            <!--</li>-->
-                            <!--<li>-->
-                            <!--    <a href="#" target="_blank"><img src="svg/social/instagram.svg" alt="" class="fn__svg"></a>-->
-                            <!--</li>-->
-                            <!--<li>-->
-                            <!--    <a href="#" target="_blank"><img src="svg/social/pinterest.svg" alt="" class="fn__svg"></a>-->
-                            <!--</li>-->
-                            <!--<li>-->
-                            <!--    <a href="#" target="_blank"><img src="svg/social/behance.svg" alt="" class="fn__svg"></a>-->
-                            <!--</li>-->
-                        </ul>
-                    </div>
-                    <div class="copyright">
-                        <!-- <a href="https://boransic.com/" target="_blank">Developed by Boransic Technologies</a> -->
-                    </div>
-                </div>
-
-            </div>
-            <!-- /Navigation Content -->
-
-        </div>
-        <!-- /Right Hidden Navigation -->
 
 
         <div class="frenify-cursor cursor-outer" data-default="yes" data-link="yes" data-slider="yes"><span
