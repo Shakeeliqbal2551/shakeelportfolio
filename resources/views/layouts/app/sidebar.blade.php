@@ -6,14 +6,74 @@
     <body class="min-h-screen bg-white dark:bg-zinc-800">
         <flux:sidebar sticky collapsible="mobile" class="border-e border-zinc-200 bg-zinc-50 dark:border-zinc-700 dark:bg-zinc-900">
             <flux:sidebar.header>
-                <x-app-logo :sidebar="true" href="{{ route('dashboard') }}" wire:navigate />
+                <x-app-logo :sidebar="true" href="{{ route('admin.dashboard') }}" wire:navigate />
                 <flux:sidebar.collapse class="lg:hidden" />
             </flux:sidebar.header>
 
             <flux:sidebar.nav>
-                <flux:sidebar.group :heading="__('Platform')" class="grid">
-                    <flux:sidebar.item icon="home" :href="route('dashboard')" :current="request()->routeIs('dashboard')" wire:navigate>
+                <flux:sidebar.group :heading="__('Overview')" class="grid">
+                    <flux:sidebar.item icon="home" :href="route('admin.dashboard')" :current="request()->routeIs('admin.dashboard')" wire:navigate>
                         {{ __('Dashboard') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="globe-alt" href="{{ url('/') }}" target="_blank">
+                        {{ __('View public site') }}
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
+
+                <flux:sidebar.group :heading="__('Site')" class="grid">
+                    <flux:sidebar.item icon="cog-6-tooth" :href="route('admin.site-settings')" :current="request()->routeIs('admin.site-settings')" wire:navigate>
+                        {{ __('Site Settings') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="photo" :href="route('admin.profile-photos')" :current="request()->routeIs('admin.profile-photos')" wire:navigate>
+                        {{ __('Profile Photos') }}
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
+
+                <flux:sidebar.group :heading="__('Portfolio')" class="grid">
+                    <flux:sidebar.item icon="briefcase" :href="route('admin.projects.index')" :current="request()->routeIs('admin.projects.*')" wire:navigate>
+                        {{ __('Projects') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="tag" :href="route('admin.projects.categories')" :current="request()->routeIs('admin.projects.categories')" wire:navigate>
+                        {{ __('Project Categories') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="academic-cap" :href="route('admin.skills.index')" :current="request()->routeIs('admin.skills.*')" wire:navigate>
+                        {{ __('Skills') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="building-office-2" :href="route('admin.experiences')" :current="request()->routeIs('admin.experiences')" wire:navigate>
+                        {{ __('Experience') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="book-open" :href="route('admin.educations')" :current="request()->routeIs('admin.educations')" wire:navigate>
+                        {{ __('Education') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="wrench-screwdriver" :href="route('admin.services')" :current="request()->routeIs('admin.services')" wire:navigate>
+                        {{ __('Services') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="star" :href="route('admin.testimonials')" :current="request()->routeIs('admin.testimonials')" wire:navigate>
+                        {{ __('Testimonials') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="sparkles" :href="route('admin.why-points')" :current="request()->routeIs('admin.why-points')" wire:navigate>
+                        {{ __('Why Hire Me') }}
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
+
+                <flux:sidebar.group :heading="__('Blog')" class="grid">
+                    <flux:sidebar.item icon="document-text" :href="route('admin.blog.posts')" :current="request()->routeIs('admin.blog.posts*')" wire:navigate>
+                        {{ __('Posts') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="folder" :href="route('admin.blog.categories')" :current="request()->routeIs('admin.blog.categories')" wire:navigate>
+                        {{ __('Categories') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="hashtag" :href="route('admin.blog.tags')" :current="request()->routeIs('admin.blog.tags')" wire:navigate>
+                        {{ __('Tags') }}
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
+
+                <flux:sidebar.group :heading="__('Inbox')" class="grid">
+                    <flux:sidebar.item icon="envelope" :href="route('admin.contact-messages')" :current="request()->routeIs('admin.contact-messages')" wire:navigate>
+                        {{ __('Contact Messages') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="chart-bar" :href="route('admin.visitor-logs')" :current="request()->routeIs('admin.visitor-logs')" wire:navigate>
+                        {{ __('Visitor Logs') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
             </flux:sidebar.nav>
@@ -21,12 +81,8 @@
             <flux:spacer />
 
             <flux:sidebar.nav>
-                <flux:sidebar.item icon="folder-git-2" href="https://github.com/laravel/livewire-starter-kit" target="_blank">
-                    {{ __('Repository') }}
-                </flux:sidebar.item>
-
-                <flux:sidebar.item icon="book-open-text" href="https://laravel.com/docs/starter-kits#livewire" target="_blank">
-                    {{ __('Documentation') }}
+                <flux:sidebar.item icon="cog" :href="route('profile.edit')" wire:navigate>
+                    {{ __('Account Settings') }}
                 </flux:sidebar.item>
             </flux:sidebar.nav>
 
