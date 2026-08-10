@@ -16,6 +16,39 @@
                         {{ __('Dashboard') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+
+                <flux:sidebar.group :heading="__('Portfolio')" class="grid">
+                    <flux:sidebar.item icon="adjustments-horizontal" :href="route('portfolio.settings')" :current="request()->routeIs('portfolio.settings')" wire:navigate>
+                        {{ __('Settings') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="identification" :href="route('portfolio.about')" :current="request()->routeIs('portfolio.about')" wire:navigate>
+                        {{ __('About') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="briefcase" :href="route('portfolio.experiences')" :current="request()->routeIs('portfolio.experiences')" wire:navigate>
+                        {{ __('Experience') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="academic-cap" :href="route('portfolio.educations')" :current="request()->routeIs('portfolio.educations')" wire:navigate>
+                        {{ __('Education') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="sparkles" :href="route('portfolio.skills')" :current="request()->routeIs('portfolio.skills')" wire:navigate>
+                        {{ __('Skills') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="rectangle-stack" :href="route('portfolio.projects')" :current="request()->routeIs('portfolio.projects')" wire:navigate>
+                        {{ __('Projects') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="cog-6-tooth" :href="route('portfolio.services')" :current="request()->routeIs('portfolio.services')" wire:navigate>
+                        {{ __('Services') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="chat-bubble-left-right" :href="route('portfolio.testimonials')" :current="request()->routeIs('portfolio.testimonials')" wire:navigate>
+                        {{ __('Testimonials') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="document-text" :href="route('portfolio.posts')" :current="request()->routeIs('portfolio.posts*')" wire:navigate>
+                        {{ __('Blog') }}
+                    </flux:sidebar.item>
+                    <flux:sidebar.item icon="chart-bar" :href="route('portfolio.visitors')" :current="request()->routeIs('portfolio.visitors')" wire:navigate>
+                        {{ __('Visitors') }}
+                    </flux:sidebar.item>
+                </flux:sidebar.group>
             </flux:sidebar.nav>
 
             <flux:spacer />

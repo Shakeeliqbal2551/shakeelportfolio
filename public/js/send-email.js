@@ -14,7 +14,7 @@ $(document).ready(function () {
         }
         
         $.ajax({
-            url: 'contact/send-email.php',
+            url: $('#contactForm').data('action-url'),
             type: 'POST',
             dataType: 'json',
             data: {

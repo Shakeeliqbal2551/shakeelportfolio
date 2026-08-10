@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Portfolio;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -12,14 +13,18 @@ use Throwable;
 
 class PortfolioContactController extends Controller
 {
-    public function logVisitor(Request $request)
+    public function logVisitor(Request $request, Portfolio $portfolio)
     {
         $visitor = $this->buildVisitorData($request);
 
         try {
-            $isRepeat = DB::table('visitor_logs')->where('ip_address', $visitor['ip_address'])->exists();
+            $isRepeat = DB::table('visitor_logs')
+                ->where('portfolio_id', $portfolio->id)
+                ->where('ip_address', $visitor['ip_address'])
+                ->exists();
 
             DB::table('visitor_logs')->insert([
+                'portfolio_id' => $portfolio->id,
                 'ip_address' => $visitor['ip_address'],
                 'country' => $visitor['country'],
                 'city' => $visitor['city'],
@@ -34,6 +39,7 @@ class PortfolioContactController extends Controller
                 'screen_resolution' => (string) $request->query('screen', 'Unknown'),
                 'is_repeat_visitor' => $isRepeat ? 1 : 0,
                 'visit_time' => now(),
+                'session_token' => $request->query('session_token') ? (string) $request->query('session_token') : null,
             ]);
 
             return response('logged', 200);
@@ -42,7 +48,32 @@ class PortfolioContactController extends Controller
         }
     }
 
-    public function sendEmail(Request $request): JsonResponse
+    public function recordDuration(Request $request, Portfolio $portfolio)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'session_token' => ['required', 'string', 'max:255'],
+                'duration_seconds' => ['required', 'integer', 'min:0', 'max:86400'],
+            ]);
+
+            if ($validator->fails()) {
+                return response('', 204);
+            }
+
+            $validated = $validator->validated();
+
+            DB::table('visitor_logs')
+                ->where('portfolio_id', $portfolio->id)
+                ->where('session_token', $validated['session_token'])
+                ->update(['duration_seconds' => $validated['duration_seconds']]);
+
+            return response('', 204);
+        } catch (Throwable) {
+            return response('', 204);
+        }
+    }
+
+    public function sendEmail(Request $request, Portfolio $portfolio): JsonResponse
     {
         $validator = Validator::make($request->all(), [
             'name' => ['required', 'string', 'max:255'],
@@ -65,6 +96,7 @@ class PortfolioContactController extends Controller
 
         try {
             DB::table('contact_messages')->insert([
+                'portfolio_id' => $portfolio->id,
                 'name' => $validated['name'],
                 'email' => $validated['email'],
                 'phone' => $validated['phone'] ?? '',
@@ -88,7 +120,7 @@ class PortfolioContactController extends Controller
             ], 500);
         }
 
-        $recipient = (string) config('mail.portfolio_contact_email', 'contact@shakeeliqbal.com');
+        $recipient = $portfolio->contact_email ?: (string) config('mail.portfolio_contact_email', 'contact@shakeeliqbal.com');
         $mapLink = ($visitor['latitude'] !== '' && $visitor['longitude'] !== '')
             ? "https://maps.google.com/?q={$visitor['latitude']},{$visitor['longitude']}"
             : null;

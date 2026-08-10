@@ -1,5 +1,4 @@
-@verbatim
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
 <!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
 <!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
@@ -11,39 +10,39 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Laravel Developer | Shakeel Iqbal Cheema - Custom Web & SaaS Solutions</title>
+    @php
+        $seoTitle = $portfolio->site_title ?: ($portfolio->about?->title ?: 'Portfolio');
+        $seoDescription = $portfolio->meta_description ?: ($portfolio->about?->bio ?: '');
+        $seoImage = $portfolio->about?->profile_image_url ?: asset('img/shakeel1.png');
+        $canonicalUrl = request()->url();
+    @endphp
+
+    <title>{{ $seoTitle }}</title>
 
     <!-- SEO Meta Tags -->
-    <meta name="description"
-        content="Hire Shakeel Iqbal Cheema, a top Laravel developer in Pakistan with 6+ years of experience building custom web apps, SaaS platforms, eCommerce systems, and enterprise solutions." />
-    <meta name="keywords"
-        content="Laravel Developer Pakistan, Hire Laravel Expert, Laravel Web Developer, SaaS Laravel Developer, Custom Web Application, PHP Backend Developer, eCommerce Developer Pakistan, Full Stack Laravel" />
-    <meta name="author" content="Shakeel Iqbal Cheema" />
+    <meta name="description" content="{{ $seoDescription }}" />
+    <meta name="author" content="{{ $portfolio->user?->name }}" />
     <meta name="robots" content="index, follow" />
-    <meta name="geo.region" content="PK" />
-    <meta name="geo.placename" content="Islamabad, Pakistan" />
     <meta name="language" content="en" />
 
     <!-- Canonical URL -->
-    <link rel="canonical" href="https://shakeeliqbal.com/" />
+    <link rel="canonical" href="{{ $canonicalUrl }}" />
 
     <!-- Open Graph for Social Media -->
-    <meta property="og:title" content="Laravel Developer | Shakeel Iqbal Cheema" />
-    <meta property="og:description"
-        content="Laravel expert in SaaS, eCommerce, APIs, and enterprise web applications. Based in Pakistan, serving clients worldwide." />
-    <meta property="og:image" content="https://shakeeliqbal.com/img/shakeel1.png" />
-    <meta property="og:url" content="https://shakeeliqbal.com/" />
+    <meta property="og:title" content="{{ $seoTitle }}" />
+    <meta property="og:description" content="{{ $seoDescription }}" />
+    <meta property="og:image" content="{{ $seoImage }}" />
+    <meta property="og:url" content="{{ $canonicalUrl }}" />
     <meta property="og:type" content="website" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Hire Laravel Developer | Shakeel Iqbal Cheema" />
-    <meta name="twitter:description"
-        content="Get secure, scalable Laravel solutions for your business. Web apps, APIs, SaaS, HR & finance platforms." />
-    <meta name="twitter:image" content="https://shakeeliqbal.com/img/shakeel1.png" />
+    <meta name="twitter:title" content="{{ $seoTitle }}" />
+    <meta name="twitter:description" content="{{ $seoDescription }}" />
+    <meta name="twitter:image" content="{{ $seoImage }}" />
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="img/logo/slogo.png" type="image/png" />
+    <link rel="shortcut icon" href="{{ asset('img/logo/slogo.png') }}" type="image/png" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -51,9 +50,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Stylesheets -->
-    <link rel="stylesheet" href="css/base.css?ver=3" />
-    <link rel="stylesheet" href="css/owl-carousel.css?ver=3" />
-    <link rel="stylesheet" href="css/style.css?ver=3" />
+    <link rel="stylesheet" href="{{ asset('css/base.css') }}?ver=3" />
+    <link rel="stylesheet" href="{{ asset('css/owl-carousel.css') }}?ver=3" />
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}?ver=3" />
 
     <!-- Static Header Styles -->
     <style>
@@ -826,6 +825,22 @@
             color: var(--text-hi) !important;
             text-decoration: none !important;
         }
+        .portfolio-grid .item .title_holder .venture-badge {
+            order: -1;
+            align-self: flex-start;
+            display: inline-block;
+            padding: 4px 11px;
+            font-family: var(--sans);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--gold-bright);
+            background: rgba(94,234,212,0.10);
+            border: 1px solid var(--border-hi);
+            border-radius: 100px;
+            line-height: 1.4;
+        }
         .portfolio-grid .item .card-desc {
             order: 2;
             margin: 0 10px 0 !important;
@@ -834,6 +849,84 @@
             font-family: var(--sans) !important;
             font-size: 14px !important;
             line-height: 1.6 !important;
+        }
+
+        .venture-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+            margin-top: 40px;
+        }
+        .venture-card {
+            display: flex;
+            flex-direction: column;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 14px;
+            overflow: hidden;
+            transition: border-color 0.2s ease, transform 0.2s ease;
+        }
+        .venture-card:hover {
+            border-color: var(--border-hi);
+            transform: translateY(-3px);
+        }
+        .venture-card-img {
+            height: 170px;
+            background-size: cover;
+            background-position: center;
+            background-color: var(--surface-hi);
+        }
+        .venture-card-body {
+            padding: 22px 24px 26px;
+            display: flex;
+            flex-direction: column;
+        }
+        .venture-card-body .venture-badge {
+            align-self: flex-start;
+            display: inline-block;
+            margin-bottom: 12px;
+            padding: 4px 11px;
+            font-family: var(--sans);
+            font-size: 10px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            color: var(--gold-bright);
+            background: rgba(94,234,212,0.10);
+            border: 1px solid var(--border-hi);
+            border-radius: 100px;
+            line-height: 1.4;
+        }
+        .venture-card-body h4 {
+            margin: 0 0 4px !important;
+            font-family: var(--serif) !important;
+            font-size: 20px !important;
+            color: var(--text-hi) !important;
+        }
+        .venture-your-title {
+            margin: 0 0 12px !important;
+            color: var(--gold) !important;
+            font-family: var(--sans) !important;
+            font-size: 13px !important;
+            font-weight: 500;
+        }
+        .venture-desc {
+            margin: 0 0 16px !important;
+            color: var(--text) !important;
+            font-family: var(--sans) !important;
+            font-size: 14px !important;
+            line-height: 1.6 !important;
+        }
+        .venture-link {
+            margin-top: auto;
+            color: var(--gold-bright) !important;
+            font-family: var(--sans) !important;
+            font-size: 13px !important;
+            font-weight: 600;
+            text-decoration: none !important;
+        }
+        .venture-link:hover {
+            color: var(--gold) !important;
         }
 
         .portfolio-grid .item .card-arrow {
@@ -1119,34 +1212,27 @@
 
     <!-- Structured Data with JSON-LD -->
     <script type="application/ld+json">
-    {
-      "@context": "https://schema.org",
-      "@type": "Person",
-      "name": "Shakeel Iqbal Cheema",
-      "url": "https://shakeeliqbal.com",
-      "image": "https://shakeeliqbal.com/img/shakeel1.png",
-      "jobTitle": "Laravel Developer",
-      "worksFor": {
-        "@type": "Organization",
-        "name": "Voetech"
-      },
-      "sameAs": [
-        "https://www.linkedin.com/in/shakeel-cheema-725940168/",
-        "https://github.com/shakeeliqbal",
-        "mailto:contact@shakeeliqbal.com"
-      ],
-      "address": {
-        "@type": "PostalAddress",
-        "addressLocality": "Islamabad",
-        "addressCountry": "PK"
-      },
-      "description": "Experienced Laravel developer with expertise in SaaS, HR systems, RESTful APIs, and scalable web applications."
-    }
+    {!! json_encode([
+        '@context' => 'https://schema.org',
+        '@type' => 'Person',
+        'name' => $portfolio->user?->name,
+        'url' => $canonicalUrl,
+        'image' => $seoImage,
+        'jobTitle' => $portfolio->hero_subtitle,
+        'sameAs' => array_values(array_filter([
+            $portfolio->contact_email ? 'mailto:'.$portfolio->contact_email : null,
+        ])),
+        'description' => $seoDescription,
+    ], JSON_UNESCAPED_SLASHES) !!}
     </script>
 </head>
 
 <body>
 
+    <script>
+        window.portfolioLogVisitorUrl = @json(route('portfolio.contact.log', $portfolio->slug));
+        window.portfolioDurationUrl = @json(route('portfolio.contact.duration', $portfolio->slug));
+    </script>
 
     <!-- Wrapper All -->
     <div class="resumo_fn_wrapper">
@@ -1156,16 +1242,22 @@
             <div class="header-inner">
                 <div class="header-logo">
                     <a href="#home">
-                        <img src="img/logo/logo.png" alt="Shakeel Iqbal Cheema" />
+                        <img src="{{ asset('img/logo/logo.png') }}" alt="{{ $portfolio->user?->name }}" />
                     </a>
                 </div>
                 <nav class="header-nav">
                     <ul>
                         <li><a href="#home">Home</a></li>
                         <li><a href="#about">About</a></li>
+                        @if ($portfolio->projects->contains(fn ($project) => $project->isVenture()))
+                            <li><a href="#ventures">Ventures</a></li>
+                        @endif
                         <li><a href="#portfolio">Portfolio</a></li>
                         <li><a href="#services">Services</a></li>
                         <li><a href="#customers">Testimonials</a></li>
+                        @if ($portfolio->posts()->published()->exists())
+                            <li><a href="{{ route('portfolio.blog.index', $portfolio) }}">Blog</a></li>
+                        @endif
                         <li><a href="#contact">Contact</a></li>
                     </ul>
                 </nav>
@@ -1217,55 +1309,73 @@
                         <div class="container">
                             <div class="roww">
                                 <div class="resumo_fn_main_title">
-                                    <span class="hero-badge">
-                                        <span class="pulse-dot"></span>
-                                        Available — Booking projects now
-                                    </span>
-                                    <h1 class="subtitle">Senior Laravel Developer · Islamabad, Pakistan</h1>
-                                    <h2 class="title">I build <span class="accent">Laravel</span> web apps<br>that make you money.</h2>
-                                    <p class="desc">
-                                        Hi, I'm <strong>Shakeel</strong>. For 6+ years I've built SaaS, eCommerce, healthcare
-                                        and HR platforms for clients in the US, UK and Netherlands. You bring the idea —
-                                        I'll ship a fast, secure app your users actually love. Simple as that.
-                                    </p>
+                                    @if ($portfolio->hero_badge_text)
+                                        <span class="hero-badge">
+                                            <span class="pulse-dot"></span>
+                                            {{ $portfolio->hero_badge_text }}
+                                        </span>
+                                    @endif
+                                    @if ($portfolio->hero_subtitle)
+                                        <h1 class="subtitle">{{ $portfolio->hero_subtitle }}</h1>
+                                    @endif
+                                    <h2 class="title">
+                                        @if ($portfolio->hero_title_accent && str_contains((string) $portfolio->hero_title, $portfolio->hero_title_accent))
+                                            {!! str_replace(
+                                                $portfolio->hero_title_accent,
+                                                '<span class="accent">'.e($portfolio->hero_title_accent).'</span>',
+                                                e($portfolio->hero_title)
+                                            ) !!}
+                                        @else
+                                            {{ $portfolio->hero_title }}
+                                        @endif
+                                    </h2>
+                                    @if ($portfolio->hero_description)
+                                        <p class="desc">
+                                            {{ $portfolio->hero_description }}
+                                        </p>
+                                    @endif
 
                                     <div class="hero-cta-row">
-                                        <a href="#contact" class="hero-cta-primary">
-                                            Book a Free 30-min Call &nbsp;→
-                                        </a>
-                                        <a href="#portfolio" class="hero-cta-secondary">
-                                            See My Work
-                                        </a>
+                                        @if ($portfolio->hero_cta_primary_label)
+                                            <a href="{{ $portfolio->hero_cta_primary_href ?: '#contact' }}" class="hero-cta-primary">
+                                                {{ $portfolio->hero_cta_primary_label }} &nbsp;→
+                                            </a>
+                                        @endif
+                                        @if ($portfolio->hero_cta_secondary_label)
+                                            <a href="{{ $portfolio->hero_cta_secondary_href ?: '#portfolio' }}" class="hero-cta-secondary">
+                                                {{ $portfolio->hero_cta_secondary_label }}
+                                            </a>
+                                        @endif
                                     </div>
-                                    <div class="hero-reassure">
-                                        <span>✓ No obligation</span>
-                                        <span>✓ Usually reply within 2 hours</span>
-                                        <span>✓ Free project estimate</span>
-                                    </div>
+                                    @if (!empty($portfolio->hero_reassurance_items))
+                                        <div class="hero-reassure">
+                                            @foreach ($portfolio->hero_reassurance_items as $item)
+                                                <span>✓ {{ $item }}</span>
+                                            @endforeach
+                                        </div>
+                                    @endif
 
-                                    <div class="hero-stats">
-                                        <div class="hero-stat">
-                                            <div class="stat-num">6+</div>
-                                            <div class="stat-label">Years Experience</div>
+                                    @if (!empty($portfolio->hero_stats))
+                                        <div class="hero-stats">
+                                            @foreach ($portfolio->hero_stats as $stat)
+                                                <div class="hero-stat">
+                                                    <div class="stat-num">{{ $stat['value'] ?? '' }}</div>
+                                                    <div class="stat-label">{{ $stat['label'] ?? '' }}</div>
+                                                </div>
+                                            @endforeach
                                         </div>
-                                        <div class="hero-stat">
-                                            <div class="stat-num">20+</div>
-                                            <div class="stat-label">Projects Shipped</div>
-                                        </div>
-                                        <div class="hero-stat">
-                                            <div class="stat-num">15+</div>
-                                            <div class="stat-label">Happy Clients</div>
-                                        </div>
-                                        <div class="hero-stat">
-                                            <div class="stat-num">6+</div>
-                                            <div class="stat-label">Countries Served</div>
-                                        </div>
-                                    </div>
+                                    @endif
 
-                                    <div class="hero-trust">
-                                        <span class="trust-label">Trusted by clients in</span>
-                                        <span class="flags">🇺🇸 🇬🇧 🇳🇱 🇵🇰 🇩🇪 🇦🇪</span>
-                                    </div>
+                                    @if ($portfolio->trust_label || $portfolio->trust_flags)
+                                        <div class="hero-trust">
+                                            @if ($portfolio->trust_label)
+                                                <span class="trust-label">{{ $portfolio->trust_label }}</span>
+                                            @endif
+                                            @if ($portfolio->trust_flags)
+                                                <span class="flags">{{ $portfolio->trust_flags }}</span>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -1282,16 +1392,19 @@
                             <div class="roww">
 
                                 <!-- Main Title -->
+                                @php
+                                    $about = $portfolio->about;
+                                @endphp
                                 <div class="resumo_fn_main_title">
-                                    <h2 class="subtitle">About Me</h2>
-                                    <h3 class="title">A developer who thinks like a founder.</h3>
-                                    <p class="desc">
-                                        I don't just write code — I solve business problems. Over 6+ years I've helped
-                                        startups and enterprises across <strong>four continents</strong> launch and scale
-                                        platforms that make money and don't break at 2 AM. I build systems that are easy
-                                        to manage, focus relentlessly on real-world outcomes, and communicate in plain
-                                        language — no jargon, no surprises.
-                                    </p>
+                                    <h2 class="subtitle">{{ $about?->heading ?: 'About Me' }}</h2>
+                                    @if ($about?->title)
+                                        <h3 class="title">{{ $about->title }}</h3>
+                                    @endif
+                                    @if ($about?->bio)
+                                        <p class="desc">
+                                            {{ $about->bio }}
+                                        </p>
+                                    @endif
                                 </div>
                                 <!-- /Main Title -->
 
@@ -1299,51 +1412,31 @@
                                 <div class="resumo_fn_about_info">
                                     <div class="about_left">
                                         <div class="about-info-grid">
-                                            <div class="info-card">
-                                                <div class="label">Based in</div>
-                                                <div class="val">Islamabad, Pakistan<br><span style="color:var(--text-muted); font-size:13px;">Serving clients globally</span></div>
-                                            </div>
-                                            <div class="info-card">
-                                                <div class="label">Experience</div>
-                                                <div class="val">6+ Years<br><span style="color:var(--text-muted); font-size:13px;">Senior Laravel Developer</span></div>
-                                            </div>
-                                            <div class="info-card">
-                                                <div class="label">Expertise</div>
-                                                <div class="val">SaaS · eCommerce<br><span style="color:var(--text-muted); font-size:13px;">Healthcare · HR · APIs</span></div>
-                                            </div>
-                                            <div class="info-card">
-                                                <div class="label">Availability</div>
-                                                <div class="val">Accepting new work<br><span style="color:var(--text-muted); font-size:13px;">Full-time / Contract</span></div>
-                                            </div>
-                                            <div class="info-card">
-                                                <div class="label">WhatsApp</div>
-                                                <div class="val">
-                                                    <a href="https://api.whatsapp.com/send?phone=+923029865526&text=Hello! I'd like to discuss a project." target="_blank">+92 302 9865526</a>
+                                            @foreach (($about?->info_cards ?: []) as $card)
+                                                <div class="info-card">
+                                                    <div class="label">{{ $card['label'] ?? '' }}</div>
+                                                    <div class="val">{{ $card['value'] ?? '' }}@if (!empty($card['subvalue']))<br><span style="color:var(--text-muted); font-size:13px;">{{ $card['subvalue'] }}</span>@endif</div>
                                                 </div>
-                                            </div>
-                                            <div class="info-card">
-                                                <div class="label">Email</div>
-                                                <div class="val">
-                                                    <a href="mailto:contact@shakeeliqbal.com">contact@shakeeliqbal.com</a>
-                                                </div>
-                                            </div>
+                                            @endforeach
                                         </div>
                                     </div>
                                     <div class="about_right">
                                         <div class="about-cta-bar">
                                             <div class="about-cta-text">
-                                                <strong>Ready to start your project?</strong>
-                                                <span>Get a free estimate — I usually reply within 2 hours.</span>
+                                                <strong>{{ $about?->cta_heading }}</strong>
+                                                <span>{{ $about?->cta_text }}</span>
                                             </div>
                                             <div class="about-cta-actions">
                                                 <a href="#contact" class="btn-primary-inline">
                                                     Book a Free Call
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                                                 </a>
-                                                <a href="img/Shakeel's Resume.pdf" download class="btn-ghost-inline">
-                                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                                                    Download CV
-                                                </a>
+                                                @if ($about?->resume_url)
+                                                    <a href="{{ $about->resume_url }}" download class="btn-ghost-inline">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                                        Download CV
+                                                    </a>
+                                                @endif
                                             </div>
                                         </div>
                                     </div>
@@ -1371,102 +1464,23 @@
                                         <div id="tab1" class="tab_item active">
                                             <div class="resumo_fn_boxed_list">
                                                 <ul>
-                                                    <li>
-                                                        <div class="item">
-                                                            <div class="item_top">
-                                                                <h5>Point of IT (Pvt) Ltd</h5>
-                                                                <span>(01/2025 — 07/2025)</span>
+                                                    @foreach ($portfolio->experiences as $experience)
+                                                        <li>
+                                                            <div class="item">
+                                                                <div class="item_top">
+                                                                    <h5>{{ $experience->company }}</h5>
+                                                                    <span>({{ $experience->date_range }})</span>
+                                                                </div>
+                                                                <h3>{{ $experience->role }}</h3>
+                                                                @if ($experience->project_name)
+                                                                    <strong>{{ $experience->project_name }}</strong>
+                                                                @endif
+                                                                <p>
+                                                                    {!! nl2br(e($experience->description)) !!}
+                                                                </p>
                                                             </div>
-                                                            <h3>Senior Laravel Developer</h3>
-                                                            <strong>Remetric Health (US-Based Healthcare
-                                                                Project)</strong>
-                                                            <p>
-                                                                Senior Backend Developer for a US healthcare platform.
-                                                                Built secure Laravel APIs, optimized complex MySQL
-                                                                procedures, and improved performance across patient
-                                                                modules.
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <div class="item">
-                                                            <div class="item_top">
-                                                                <h5>Dream Warrior Group</h5>
-                                                                <span>(04/2024 — 12/2024)</span>
-                                                            </div>
-                                                            <h3>Team Lead & Laravel Developer</h3>
-                                                            <p>
-                                                                At Dream Warrior Group, I worked on
-                                                                <strong>ARTdynamix®</strong>, a CMS tailored for
-                                                                performing arts organizations, where I built robust
-                                                                Laravel backend systems and integrated ticketing,
-                                                                fundraising, and SEO enhancements.
-                                                                <br><br>
-                                                                I also led the <strong>Dairy Queen</strong> project, 
-                                                                a well-known <strong>American food franchise brand</strong>, 
-                                                                overseeing architecture, backend development, and 
-                                                                performance optimization. From planning to successful delivery, 
-                                                                I ensured scalable, secure, and business-focused solutions tailored 
-                                                                to their large-scale operations.
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <div class="item">
-                                                            <div class="item_top">
-                                                                <h5>AT Tech</h5>
-                                                                <span>(09/2019 — 04/2024)</span>
-                                                            </div>
-                                                            <h3>Laravel Developer</h3>
-                                                            <p>
-                                                                Built telemedicine platform Dr. iQ for online
-                                                                consultations and prescriptions. Focused on patient data
-                                                                security and robust backend performance.
-                                                            </p>
-                                                        </div>
-                                                    </li>
-                                                    <!--<li>-->
-                                                    <!--    <div class="item">-->
-                                                    <!--        <div class="item_top">-->
-                                                    <!--            <h5>Chip Training and Consulting</h5>-->
-                                                    <!--            <span>(08/2021 — 08/2022)</span>-->
-                                                    <!--        </div>-->
-                                                    <!--        <h3>Team Lead</h3>-->
-                                                    <!--        <p>-->
-                                                    <!--            Led development of HR and exam systems using Laravel and-->
-                                                    <!--            Vue.js. Created dynamic forms and inspection modules for-->
-                                                    <!--            data-driven projects.-->
-                                                    <!--        </p>-->
-                                                    <!--    </div>-->
-                                                    <!--</li>-->
-                                                    <!--<li>-->
-                                                    <!--    <div class="item">-->
-                                                    <!--        <div class="item_top">-->
-                                                    <!--            <h5>Codiro Technologies</h5>-->
-                                                    <!--            <span>(08/2020 — 01/2021)</span>-->
-                                                    <!--        </div>-->
-                                                    <!--        <h3>Laravel Developer (Part-Time)</h3>-->
-                                                    <!--        <p>-->
-                                                    <!--            Built database-driven systems and eCommerce platforms-->
-                                                    <!--            using Laravel. Translated business needs into efficient-->
-                                                    <!--            backend solutions.-->
-                                                    <!--        </p>-->
-                                                    <!--    </div>-->
-                                                    <!--</li>-->
-                                                    <!--<li>-->
-                                                    <!--    <div class="item">-->
-                                                    <!--        <div class="item_top">-->
-                                                    <!--            <h5>Quip Solutions</h5>-->
-                                                    <!--            <span>(08/2019 — 07/2021)</span>-->
-                                                    <!--        </div>-->
-                                                    <!--        <h3>Laravel & Vue.js Developer</h3>-->
-                                                    <!--        <p>-->
-                                                    <!--            Full-stack developer for eCommerce, SEO, and property-->
-                                                    <!--            systems. Integrated Laravel APIs with Vue.js frontends,-->
-                                                    <!--            focusing on clean code and performance.-->
-                                                    <!--        </p>-->
-                                                    <!--    </div>-->
-                                                    <!--</li>-->
+                                                        </li>
+                                                    @endforeach
                                                 </ul>
                                             </div>
                                         </div>
@@ -1476,28 +1490,18 @@
                                         <div id="tab2" class="tab_item">
                                             <div class="resumo_fn_boxed_list">
                                                 <ul>
-                                                    <li>
-                                                        <div class="item">
-                                                            <div class="item_top">
-                                                                <h5>International Islamic University Islamabad</h5>
-                                                                <span>(08/2014 — 01/2019)</span>
+                                                    @foreach ($portfolio->educations as $education)
+                                                        <li>
+                                                            <div class="item">
+                                                                <div class="item_top">
+                                                                    <h5>{{ $education->institution }}</h5>
+                                                                    <span>({{ $education->date_range }})</span>
+                                                                </div>
+                                                                <h3>{{ $education->degree }}</h3>
+                                                                <p>{{ $education->description }}</p>
                                                             </div>
-                                                            <h3>BS in Software Engineering</h3>
-                                                            <p>Specialized in software architecture, backend
-                                                                development, and databases.</p>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <div class="item">
-                                                            <div class="item_top">
-                                                                <h5>Sir Syed College, Wah Cantt</h5>
-                                                                <span>(2012 — 2014)</span>
-                                                            </div>
-                                                            <h3>FSc (Pre-Engineering)</h3>
-                                                            <p>Focused on Physics, Mathematics, and Computer Science.
-                                                            </p>
-                                                        </div>
-                                                    </li>
+                                                        </li>
+                                                    @endforeach
                                                 </ul>
                                             </div>
                                         </div>
@@ -1507,21 +1511,9 @@
                                         <div id="tab3" class="tab_item">
 
                                             <div class="skills-grid">
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">Laravel (PHP)</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">MySQL &amp; PostgreSQL</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">RESTful APIs</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">Livewire</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">Vue.js</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">CodeIgniter</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">JavaScript &amp; jQuery</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">HTML5 &amp; CSS3</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">OOP &amp; MVC</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">Docker</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">Git &amp; CI/CD</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">Stored Procedures</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">Payment Gateways</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">Queues &amp; Jobs</span></div>
-                                                <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">Redis &amp; Caching</span></div>
+                                                @foreach ($portfolio->skills as $skill)
+                                                    <div class="skill-chip"><span class="skill-dot"></span><span class="skill-name">{{ $skill->name }}</span></div>
+                                                @endforeach
                                             </div>
 
                                             <!-- Legacy progress bar (hidden via CSS) -->
@@ -1648,6 +1640,52 @@
                     <!-- /About Section -->
 
 
+                    @php
+                        $ventureProjects = $portfolio->projects->filter(fn ($project) => $project->isVenture());
+                    @endphp
+                    @if ($ventureProjects->isNotEmpty())
+                        <!-- Ventures Section -->
+                        <section id="ventures">
+                            <div class="container">
+                                <div class="roww">
+                                    <div class="resumo_fn_main_title">
+                                        <h2 class="subtitle">Beyond Client Work</h2>
+                                        <h3 class="title">Products &amp; Companies I've Built</h3>
+                                        <p class="desc">These aren't client projects — they're products I've founded, co-founded, or hold a stake in.</p>
+                                    </div>
+
+                                    <div class="venture-grid">
+                                        @foreach ($ventureProjects as $venture)
+                                            @php
+                                                $ventureImageUrl = $venture->image_url ?: asset('img/thumb/square.jpg');
+                                            @endphp
+                                            <div class="venture-card">
+                                                <div class="venture-card-img" style="background-image: url('{{ $ventureImageUrl }}');"></div>
+                                                <div class="venture-card-body">
+                                                    <span class="venture-badge">{{ $venture->role->label() }}</span>
+                                                    <h4>{{ $venture->company_name ?: $venture->title }}</h4>
+                                                    @if ($venture->your_title)
+                                                        <p class="venture-your-title">{{ $venture->your_title }}</p>
+                                                    @endif
+                                                    @if ($venture->description)
+                                                        <p class="venture-desc">{{ $venture->description }}</p>
+                                                    @endif
+                                                    @if ($venture->external_link)
+                                                        <a rel="nofollow" target="_blank" href="{{ $venture->external_link }}" class="venture-link">
+                                                            Visit {{ $venture->company_name ?: $venture->title }} →
+                                                        </a>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                        <!-- /Ventures Section -->
+                    @endif
+
+
                     <!-- Why Work With Me Section -->
                     <section id="why">
                         <div class="container">
@@ -1703,13 +1741,19 @@
                                 <!-- /Main Title -->
 
                                 <!-- Filter Tabs -->
+                                @php
+                                    $clientProjects = $portfolio->projects->reject(fn ($project) => $project->isVenture());
+                                    $projectTags = $clientProjects
+                                        ->flatMap(fn ($project) => $project->tags ?: [])
+                                        ->filter()
+                                        ->unique()
+                                        ->values();
+                                @endphp
                                 <div class="portfolio-filters" id="portfolioFilters">
                                     <button type="button" class="filter-btn active" data-filter="all">All Projects</button>
-                                    <button type="button" class="filter-btn" data-filter="saas">SaaS</button>
-                                    <button type="button" class="filter-btn" data-filter="healthcare">Healthcare</button>
-                                    <button type="button" class="filter-btn" data-filter="ecommerce">eCommerce</button>
-                                    <button type="button" class="filter-btn" data-filter="finance">Finance</button>
-                                    <button type="button" class="filter-btn" data-filter="enterprise">Enterprise</button>
+                                    @foreach ($projectTags as $tag)
+                                        <button type="button" class="filter-btn" data-filter="{{ $tag }}">{{ ucfirst($tag) }}</button>
+                                    @endforeach
                                 </div>
                                 <!-- /Filter Tabs -->
                             </div>
@@ -1718,726 +1762,59 @@
                         <div class="container noright">
                             <div class="roww">
 
-                                <div class="portfolio-grid modal_items" data-from="portfolio" data-count="11">
+                                <div class="portfolio-grid modal_items" data-from="portfolio" data-count="{{ $clientProjects->count() }}">
 
-                                    <!-- Remetric Health -->
-                                    <div class="item modal_item" data-index="1" data-category="saas healthcare">
-                                        <div class="img_holder">
-                                            <img src="img/thumb/square.jpg" alt="">
-                                            <div class="abs_img" data-bg-img="img/portfolio/remetrichealth.png"></div>
-                                        </div>
-                                        <div class="title_holder">
-                                            <p>US Healthcare · Remote Patient Monitoring</p>
-                                            <h3><a rel="nofollow" target="_blank" href="https://www.remetrichealth.com/"
-                                                    target="_blank">Remetric Health</a></h3>
-                                        </div>
-                                        <div class="fn__hidden">
-                                            <p class="fn__cat">RPM
-                                                <small> (<a rel="nofollow" target="_blank" style="color: rgb(92 92 66);"
-                                                        href="https://remetrichealth.com/">Click Here To Visit
-                                                        Website</a>)</small>
-                                            </p>
-                                            <h3 class="fn__title">Remetric Health</h3>
+                                    @foreach ($clientProjects as $project)
+                                        @php
+                                            $categoryAttr = implode(' ', $project->tags ?: []);
+                                            $imageUrl = $project->image_url ?: asset('img/thumb/square.jpg');
+                                            $imageAlt = $project->image_alt ?: ($project->title.' — screenshot');
+                                            $primaryTag = $project->tags[0] ?? null;
+                                        @endphp
+                                        <div class="item modal_item" data-index="{{ $loop->iteration }}" data-category="{{ $categoryAttr }}">
                                             <div class="img_holder">
-                                                <img src="img/thumb/square.jpg" alt="">
-                                                <div class="abs_img" data-bg-img="img/portfolio/remetrichealth.png">
-                                                </div>
+                                                <img src="{{ $imageUrl }}" alt="{{ $imageAlt }}" loading="lazy">
+                                                <div class="abs_img" data-bg-img="{{ $imageUrl }}"></div>
                                             </div>
-
-                                            <p class="fn__desc">
-                                                Remetric Health is a Remote Patient Monitoring (RPM) platform designed
-                                                to help healthcare providers track patients' vital signs and health data
-                                                in real time using connected medical devices. The system enables
-                                                proactive care, early detection of health issues, and improved patient
-                                                outcomes, especially for chronic disease management.
-                                                Key features include:
-                                            <ul>
-
-
-                                                <li>Remetric Health is a US-based Remote Patient Monitoring (RPM)
-                                                    platform</li>
-                                                <li>Designed to monitor patients' vital signs remotely using connected
-                                                    medical devices</li>
-                                                <li>Tracks blood pressure, heart rate, glucose, weight, temperature, and
-                                                    SpO2 in real time</li>
-                                                <li>Helps healthcare providers intervene early with alerts and reports
-                                                    based on vital data</li>
-                                                <li>Used by clinics, hospitals, and home health agencies to improve
-                                                    chronic care management</li>
-                                                <li>Aims to reduce hospital readmissions and ensure better long-term
-                                                    health outcomes</li>
-                                                <li>Integrates with EHR systems and provides custom reports for
-                                                    clinicians and caregivers</li>
-
-                                            </ul>
-                                            </p>
-
-                                            <p class="fn__desc">
-                                            <p><a rel="nofollow" target="_blank" style="color: rgb(146, 146, 69);"
-                                                    href="https://remetrichealth.com/">Click Here To Visit Website</a>
-                                            </p>
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Art Dynamics -->
-                                    <div class="item modal_item" data-index="2" data-category="saas">
-                                        <div class="img_holder">
-                                            <img src="img/thumb/square.jpg" alt="">
-                                            <div class="abs_img" data-bg-img="img/portfolio/artdynamix.png"></div>
-                                        </div>
-                                        <div class="title_holder">
-                                            <p>CMS · Performing Arts Organizations</p>
-                                            <h3><a rel="nofollow" target="_blank"
-                                                    href="https://www.artdynamix.net/">ARTdynamix®</a></h3>
-                                        </div>
-                                        <div class="fn__hidden">
-                                            <p class="fn__cat">CMS
-                                                <small> (<a rel="nofollow" target="_blank" style="color: rgb(92 92 66);"
-                                                        href="https://artdynamix.net/">Click Here To Visit
-                                                        Website</a>)</small>
-                                            </p>
-                                            <h3 class="fn__title">ARTdynamix®</h3>
-                                            <div class="img_holder">
-                                                <img src="img/thumb/square.jpg" alt="">
-                                                <div class="abs_img" data-bg-img="img/portfolio/artdynamix.png"></div>
+                                            <div class="title_holder">
+                                                <h3>
+                                                    @if ($project->external_link)
+                                                        <a rel="nofollow" target="_blank" href="{{ $project->external_link }}">{{ $project->title }}</a>
+                                                    @else
+                                                        {{ $project->title }}
+                                                    @endif
+                                                </h3>
+                                                @if ($project->description)
+                                                    <p class="card-desc">{{ $project->description }}</p>
+                                                @endif
                                             </div>
-
-                                            <p class="fn__desc">
-                                                ARTdynamix®. developed as a powerful website builder and content
-                                                management system (CMS) for The Arts, it includes time saving tools to
-                                                easily manage your marketing, and content.
-                                                Key features include:
-                                            <ul>
-
-
-                                                <li>Pre-built themes and configurations to align with your marketing
-                                                    needs</li>
-                                                <li>Data sync with your ticketing and fundraising platforms
-                                                </li>
-                                                <li>Classes option
-                                                </li>
-                                                <li>Private board and group rooms
-                                                </li>
-                                                <li>Facility Rental Promotion
-                                                </li>
-                                                <li>Built in SEO to increase visibility & traffic to the site
-
-                                                </li>
-                                                <li>Drag and drop page builder
-                                                </li>
-                                                <li>Designed to make events, packages, classes and fundraising more
-                                                    exciting and easier to manage.
-
-                                                </li>
-
-                                            </ul>
-                                            </p>
-
-                                            <p class="fn__desc">
-                                            <p><a rel="nofollow" target="_blank" style="color: rgb(146, 146, 69);"
-                                                    href="https://artdynamix.net/">Click Here To Visit Website</a></p>
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Dr.iQ -->
-                                    <div class="item modal_item" data-index="3" data-category="saas healthcare">
-                                        <div class="img_holder">
-                                            <img src="img/thumb/square.jpg" alt="">
-                                            <div class="abs_img" data-bg-img="img/portfolio/dr_iq.png"></div>
-                                        </div>
-                                        <div class="title_holder">
-                                            <p>Telemedicine · AI Triage + Secure EHR</p>
-                                            <h3>
-                                                <!--<a rel="nofollow" target="_blank" href="https://www.dr-iq.com/">-->
-                                                    Dr.
-                                                    iQ</a></h3>
-                                        </div>
-                                        <div class="fn__hidden">
-                                            <p class="fn__cat">Telemedicine Platform
-                                                <!--<small> (<a rel="nofollow" target="_blank" style="color: rgb(92 92 66);"-->
-                                                <!--        href="https://www.dr-iq.com/">Click Here To Visit-->
-                                                <!--        Website</a>)</small>-->
-                                            </p>
-                                            <h3 class="fn__title">Dr. iQ</h3>
-                                            <div class="img_holder">
-                                                <img src="img/thumb/square.jpg" alt="">
-                                                <div class="abs_img" data-bg-img="img/portfolio/dr_iq.png"></div>
-                                            </div>
-
-                                            <p class="fn__desc">
-                                                A telemedicine platform that provides patients with remote consultations
-                                                with qualified medical professionals. Key features include:
-                                            <ul>
-
-
-                                                <li>Ability for patients to book appointments with qualified medical
-                                                    professionals, receive a diagnosis, and get prescriptions for
-                                                    medication, all from the comfort of their homes.</li>
-                                                <li>An AI chatbot that assists patients in answering general
-                                                    health-related questions.</li>
-                                                <li>Two types of users: patients and doctors.</li>
-                                                <li>Dr-iq.com is designed to make healthcare more accessible,
-                                                    efficient, and convenient for patients.</li>
-                                                <li>Patients can securely upload their medical records, including
-                                                    X-rays
-                                                    and lab results, for review by their doctor.</li>
-                                                <li>Doctors can easily manage their schedules, accept or reject
-                                                    appointment requests, and view their patients' medical records.
-                                                </li>
-                                                <li>Integrated payment system for seamless transactions.</li>
-                                                <li>Strict security protocols to ensure patient data privacy.</li>
-
-                                            </ul>
-                                            </p>
-
-                                            <p class="fn__desc">
-                                            <!--<p>-->
-                                            <!--    <a rel="nofollow" target="_blank" style="color: rgb(146, 146, 69);"-->
-                                            <!--        href="https://www.dr-iq.com/">Click Here To Visit Website</a-->
-                                            <!--        ></p>-->
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Dairy queen -->
-                                    <div class="item modal_item" data-index="4" data-category="finance enterprise">
-                                        <div class="img_holder">
-                                            <img src="img/thumb/square.jpg" alt="">
-                                            <div class="abs_img" data-bg-img="img/portfolio/dairy_queen.png"></div>
-                                        </div>
-                                        <div class="title_holder">
-                                            <p>Finance System · US Food Franchise</p>
-                                            <h3><a rel="nofollow" target="_blank" href="https://dq.shakeeliqbal.com/"
-                                                    target="_blank">Dairy Queen</a></h3>
-                                        </div>
-                                        <div class="fn__hidden">
-                                            <p class="fn__cat">Financial Management System
-                                                <small> (<a rel="nofollow" target="_blank"
-                                                        style="color: rgb(92, 92, 66);"
-                                                        href="https://dq.shakeeliqbal.com/" target="_blank">Click Here
-                                                        To Visit Website</a>)</small>
-                                            </p>
-                                            <h3 class="fn__title">Dairy queen Financial Management System</h3>
-                                            <div class="img_holder">
-                                                <img src="img/thumb/square.jpg" alt="">
-                                                <div class="abs_img" data-bg-img="img/portfolio/dairy_queen.png"></div>
-                                            </div>
-
-                                            <p class="fn__desc">
-                                                Developed a robust Financial Management System for Dairy queen using
-                                                <strong>Laravel 11</strong>, enabling efficient store operations,
-                                                financial tracking, and reporting. The system includes advanced features
-                                                for user role management, daily financial monitoring, and comprehensive
-                                                data handling for stores and users.
-                                            </p>
-                                            <ul>
-                                                <li><strong>Role & Permission Management:</strong> Implemented a roles
-                                                    and permissions module using the <strong>Spatie package</strong> for
-                                                    seamless role-based access control, including Manager, Assistant
-                                                    Manager, and Staff roles.</li>
-                                                <li><strong>Store Module:</strong> Designed a dedicated module for
-                                                    managing store operations, including:
-                                                    <ul>
-                                                        <li>Store profiles with location details, operating hours, and
-                                                            assigned managers.</li>
-                                                        <li>Tracking of store performance, sales, and financial
-                                                            summaries.</li>
-                                                        <li>Store-specific configuration for monthly targets and bonus
-                                                            calculations.</li>
-                                                    </ul>
-                                                </li>
-                                                <li><strong>User Module:</strong> Created a user management module with
-                                                    features such as:
-                                                    <ul>
-                                                        <li>User profiles with roles and permissions.</li>
-                                                        <li>Activity logs for tracking user actions within the system.
-                                                        </li>
-                                                        <li>Password management and secure authentication.</li>
-                                                        <li>Integration with the roles module to assign permissions
-                                                            dynamically.</li>
-                                                    </ul>
-                                                </li>
-                                                <li><strong>Inventory Module:</strong> Built a module specifically for
-                                                    managing inventory with features such as item price updates for
-                                                    real-time accuracy.
-                                                </li>
-                                                <li><strong>Daily Envelope System:</strong> Designed a module for daily
-                                                    entries such as net sales, total payouts, cash over/short, register
-                                                    readings, food/non-food costs, refunds, and cash control.</li>
-                                                <li><strong>Monthly Factsheet:</strong> Aggregated daily envelopes to
-                                                    compute bonuses and generate detailed monthly reports based on
-                                                    store, month, and year.</li>
-                                                <li><strong>Reports & Analytics:</strong> Created a comprehensive
-                                                    reporting system with the following reports:
-                                                    <ul>
-                                                        <li>Total Sales Report</li>
-                                                        <li>Sales Journal</li>
-                                                        <li>Manager Bonus Report</li>
-                                                        <li>Actual Comparison Report</li>
-                                                        <li>Sales Summaries</li>
-                                                        <li>Percentage Changes</li>
-                                                        <li>YTD Reports</li>
-                                                        <li>Sales Goal Bonuses</li>
-                                                        <li>Price Changes</li>
-                                                        <li>Over/Short Reports</li>
-                                                        <li>BOM EOM Reports</li>
-                                                    </ul>
-                                                </li>
-                                                <li><strong>Data Synchronization:</strong> Ensured accurate and
-                                                    real-time data synchronization across modules for streamlined
-                                                    operations.</li>
-                                                <li>To check the dashboard, you can use these credentials:</li>
-                                                <ul>
-                                                    <li><strong>Admin Account:</strong> admin@yopmail.com<br>
-                                                        <strong>Password:</strong> password
-                                                    </li>
-                                                </ul>
+                                            <div class="fn__hidden">
+                                                <p class="fn__cat">{{ $primaryTag ? ucfirst($primaryTag) : $project->title }}
+                                                    @if ($project->external_link)
+                                                        <small> (<a rel="nofollow" target="_blank" style="color: rgb(92 92 66);" href="{{ $project->external_link }}">Click Here To Visit Website</a>)</small>
+                                                    @endif
                                                 </p>
-                                            </ul>
-                                            <p class="fn__desc">
-                                                <a rel="nofollow" target="_blank" style="color: rgb(146, 146, 69);"
-                                                    href="https://dq.shakeeliqbal.com/" target="_blank">Click Here To
-                                                    Visit Website</a>
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- retbajri -->
-                                    <div class="item modal_item" data-index="5" data-category="ecommerce">
-                                        <div class="img_holder">
-                                            <img src="img/thumb/square.jpg" alt="">
-                                            <div class="abs_img" data-bg-img="img/portfolio/retbajri.png"></div>
-                                        </div>
-                                        <div class="title_holder">
-                                            <p>Multi-Vendor eCommerce Marketplace</p>
-                                            <h3><a rel="nofollow" target="_blank"
-                                                    href="https://retbajri.shakeeliqbal.com/">Retbajri</a></h3>
-                                        </div>
-                                        <div class="fn__hidden">
-                                            <p class="fn__cat">eCommerce store
-                                                <small> (<a rel="nofollow" target="_blank" style="color: rgb(92 92 66);"
-                                                        href="https://retbajri.shakeeliqbal.com/">Click Here To Visit
-                                                        Website</a>)</small>
-                                            </p>
-                                            <h3 class="fn__title">Retbajri</h3>
-                                            <div class="img_holder">
-                                                <img src="img/thumb/square.jpg" alt="">
-                                                <div class="abs_img" data-bg-img="img/portfolio/retbajri.png"></div>
-                                            </div>
-
-                                            <p class="fn__desc">Retbajri is a multi-vendor website. Users can sell and
-                                                buy construction materials on this website. <br> Retbajri consists of 3
-                                                types of users. </p>
-                                            <p class="fn__desc">
-                                            <ul>
-                                                <li>Admin</li>
-                                                <li>Seller</li>
-                                                <li>Buyer</li>
-                                            </ul>
-                                            </p>
-                                            <p class="fn__desc">Admin Dasboard: <br>
-                                            <ul>
-                                                <li>Analytics Dashboard</li>
-                                                <li>Add Product Categories</li>
-                                                <li>Add Service Categories</li>
-                                                <li>Create Plans</li>
-                                                <li>Add Brands</li>
-                                                <li>Add Packages</li>
-                                                <li>Approve/Reject Products</li>
-                                                <li>Approve/Reject Companies</li>
-                                                <li>Block/Unblock Users</li>
-                                                <li>Add Banners</li>
-
-                                            </ul>
-                                            </p>
-                                            <p class="fn__desc">Seller Dasboard:
-                                            <ul>
-                                                <li>Analytics Dashboard</li>
-                                                <li>Complete Profile</li>
-                                                <li>Create Company Profile</li>
-                                                <li>Account Verification by OTP</li>
-                                                <li>Add multiple Products</li>
-                                                <li>Create Ad of products according to purchased plan</li>
-                                                <li>Add Services</li>
-                                                <li>See Current Ads list</li>
-                                                <li>Create Offers</li>
-                                                <li>See Quotations</li>
-                                                <li>See all orders</li>
-                                                <li>See all plans list</li>
-                                                <li>Buy Plan for Ad posting</li>
-                                                <li>See plan history</li>
-                                            </ul>
-                                            </p>
-
-                                            <p class="fn__desc">Buyer Dasboard:
-                                            <ul>
-                                                <li>Analytics Dashboard</li>
-                                                <li>Complete Profile</li>
-                                                <li>Account Verification by OTP</li>
-                                                <li>Sell all Plans for Quotations</li>
-                                                <li>Buyer current Quotation Plan</li>
-                                                <li>All Sent Quotations</li>
-                                                <li>Pending Quotations</li>
-                                                <li>Active Quotations</li>
-                                                <li>Pending Orders</li>
-                                                <li>Active Orders</li>
-
-                                            </ul>
-                                            <p>To check the dashboard, you can use these credentials:</p>
-                                            <ul>
-                                                <li><strong>Admin Account:</strong> admin@retbajri.com<br>
-                                                    <strong>Password:</strong> password
-                                                </li>
-                                                <li><strong>Seller Account:</strong> seller@retbajri.com<br>
-                                                    <strong>Password:</strong> password
-                                                </li>
-                                                <li><strong>Buyer Account:</strong> buyer@retbajri.com<br>
-                                                    <strong>Password:</strong> password
-                                                </li>
-                                            </ul>
-                                            </p>
-                                            <p class="fn__desc">
-                                            <p><a rel="nofollow" target="_blank" style="color: rgb(146, 146, 69);"
-                                                    href="https://retbajri.shakeeliqbal.com/">Click Here To Visit
-                                                    Website</a></p>
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- KeyWord Caddy -->
-                                    <div class="item modal_item" data-index="6" data-category="saas">
-                                        <div class="img_holder">
-                                            <img src="img/thumb/square.jpg" alt="">
-                                            <div class="abs_img" data-bg-img="img/portfolio/keywordcaddy.png"></div>
-                                        </div>
-                                        <div class="title_holder">
-                                            <p>SEO SaaS · Keyword Analysis Tool</p>
-                                            <h3><a rel="nofollow" target="_blank"
-                                                    href="https://keywordcaddy.com/">KeyWord Caddy</a>
-                                            </h3>
-                                        </div>
-                                        <div class="fn__hidden">
-                                            <p class="fn__cat">SEO optimization tool<small> (<a rel="nofollow"
-                                                        target="_blank" style="color: rgb(92 92 66);"
-                                                        href="https://keywordcaddy.com/">Click Here To Visit
-                                                        Website</a>)</small></p>
-                                            <h3 class="fn__title">KeyWord Caddy</h3>
-                                            <div class="img_holder">
-                                                <img src="img/thumb/square.jpg" alt="">
-                                                <div class="abs_img" data-bg-img="img/portfolio/keywordcaddy.png"></div>
-                                            </div>
-                                            <p class="fn__desc">KeywordCaddy simplifies and accelerates the process of
-                                                creating SEO content that ranks high in search engines.
-                                            <ul>
-
-                                            </ul>
-                                            <li>User can create account and buy package/plan. </li>
-                                            <li>User can create multiple projects. </li>
-                                            <li>User can write or paste the content. </li>
-                                            <li>User can import keywords to keywordcaddy.</li>
-                                            <li>It shows the user which keywords are used and which one have not
-                                                been used in your content. </li>
-                                            <li>Keyword Caddy show that how many times a keyword is being used in
-                                                the content.</li>
-                                            <li>User can see the total length count of words. </li>
-
-                                            </p>
-                                            <p class="fn__desc">
-                                            <p><a rel="nofollow" target="_blank" style="color: rgb(146, 146, 69);"
-                                                    href="https://keywordcaddy.com/">Click Here To Visit Website</a>
-                                            </p>
-                                            </p>
-
-                                        </div>
-                                    </div>
-
-                                    <!-- Qurbani Pro -->
-                                    <div class="item modal_item" data-index="7" data-category="ecommerce enterprise">
-                                        <div class="img_holder">
-                                            <img src="img/thumb/square.jpg" alt="">
-                                            <div class="abs_img" data-bg-img="img/portfolio/qurbanipro.png"></div>
-                                        </div>
-                                        <div class="title_holder">
-                                            <p>Order + Logistics System · Barcode Tracking</p>
-                                            <h3><a rel="nofollow" target="_blank"
-                                                    href="https://keywordcaddy.com/">Qurbani Pro</a></h3>
-                                        </div>
-                                        <div class="fn__hidden">
-                                            <p class="fn__cat">Online Qurbani Monetring System<small> (<a rel="nofollow"
-                                                        target="_blank" style="color: rgb(92 92 66);"
-                                                        href="https://qurbanipro.com/">Click Here To Visit
-                                                        Website</a>)</small></p>
-                                            <h3 class="fn__title">Qurbani Pro</h3>
-                                            <div class="img_holder">
-                                                <img src="img/thumb/square.jpg" alt="">
-                                                <div class="abs_img" data-bg-img="img/portfolio/qurbanipro.png"></div>
-                                            </div>
-                                            <p class="fn__desc">Qurbani Pro is an online qurbani ordering system and
-                                                qurbani process monitering system.
-                                            <ul>
-
-                                            </ul>
-                                            <li>Users can order qurbani online by filling the form and sending
-                                                payment to the company on the website or visit nearest outlet to for
-                                                booking.</li>
-                                            <li>Users get text messages of their order number.</li>
-
-
-                                            </p>
-                                            <br>
-                                            <p class="fn__desc"> <b> Outlet Dasboard: </b> </p>
-                                            <ul>
-                                                <li>Enter the booking details</li>
-                                                <li>Print POS receipt of the order</li>
-                                                <li>Check all bookings entered by the outlet</li>
-                                                <li>Reprint any POS receipt from the list</li>
-                                                <li>Generate daily bookings report</li>
-                                                <li> <b> At Eid Day</b></li>
-                                                <ul>
-                                                    <li>Scan Barcode at receiving the meat basket from factory (a text
-                                                        message will be sent to customer to pick the order from their
-                                                        selected outlet)</li>
-                                                    <li>Scan Barcode at delivering the meat basket to the customer (a
-                                                        text message will be sent to customer that you have received you
-                                                        order)</li>
-                                                </ul>
-
-                                            </ul>
-                                            </p>
-                                            <p class="fn__desc"> <b> Finance Dasboard: </b></p>
-                                            <ul>
-                                                <li>Enter the booking details from company (only referral/employees
-                                                    bookings with discounts)</li>
-                                                <li>Print POS receipt of the order</li>
-                                                <li>Verify all booking by cross checking the payments.</li>
-                                                <li>Reject any booking if the payment is not received.</li>
-                                                <li>Delete any booking if the booking seems as fake entry.</li>
-                                                <li>Generate report of total orders.</li>
-                                            </ul>
-                                            </p>
-                                            <p class="fn__desc"> <b> Manager Dasboard:</b> </p>
-                                            <ul>
-                                                <li>Generate barcodes against order numbers</li>
-                                                <li>Print barcode stickers</li>
-                                                <li>Scan barcode tags on the meat baskets at the day of EID to update
-                                                    the status of the order</li>
-                                                <ul>
-                                                    <li>Scaning at Slaughtering</li>
-                                                    <li>Scaning at Packing Order</li>
-                                                    <li>Scaning at Loading Order</li>
-                                                </ul>
-                                            </ul>
-                                            </p>
-                                            <p class="fn__desc"> <b> Admin Dasboard: </b> </p>
-                                            <ul>
-                                                <li>Eid day progress</li>
-                                                <li>Check progress of specific outlet orders (initialized, loaded,
-                                                    packed, delivered etc)</li>
-                                                <li>Hourly progress</li>
-                                                <li>Total order analytics</li>
-                                                <li>Search by specific order to check status</li>
-
-                                            </ul>
-                                            </p>
-
-                                            <p class="fn__desc">
-                                            <p><a rel="nofollow" target="_blank" style="color: rgb(146, 146, 69);"
-                                                    href="https://qurbanipro.com/">Click Here To Visit Website</a>
-                                            </p>
-                                            </p>
-
-                                        </div>
-                                    </div>
-
-                                    <!-- HRIS -->
-                                    <div class="item modal_item" data-index="8" data-category="enterprise">
-                                        <div class="img_holder">
-                                            <img src="img/thumb/square.jpg" alt="">
-                                            <div class="abs_img" data-bg-img="img/portfolio/hris.png"></div>
-                                        </div>
-                                        <div class="title_holder">
-                                            <p>HR Platform · Payroll + Recruitment</p>
-                                            <h3><a rel="nofollow" target="_blank"
-                                                    href="https://hris.ctcorg.com/">HRIS</a></h3>
-                                        </div>
-                                        <div class="fn__hidden">
-                                            <p class="fn__cat">HR management system <small>
-                                                    <!--(<a rel="nofollow" target="_blank"-->
-                                                    <!--       style="color: rgb(92 92 66);"-->
-                                                    <!--       href="#">Click Here To Visit-->
-                                                    <!--       Website</a>)-->
-                                                </small></p>
-                                            <h3 class="fn__title">HRIS</h3>
-                                            <div class="img_holder">
-                                                <img src="img/thumb/square.jpg" alt="">
-                                                <div class="abs_img" data-bg-img="img/portfolio/hris.png"></div>
-                                            </div>
-                                            <p class="fn__desc">HRIS Consist of following Modules:
-                                            <ul>
-                                                <li>Recruitment management system</li>
-                                                <li> Leave management system</li>
-                                                <li> Contract management system</li>
-                                                <li> Pay roll management system</li>
-                                                <li> Training management system</li>
-                                                <li> Disciplinary management system</li>
-                                                <li> Activity log management system</li>
-                                                <li> Appraisal management system</li>
-                                                <li> Employs management system</li>
-                                                <li> Employees Profile management system</li>
-                                                <li> User management system </li>
-                                                <li> Insurance management system </li>
-                                                <li> Reports: Deployment, disciplinary, employee, training staff,
-                                                    employs history, appraisal
-                                                </li>
-                                            </ul>
-
-                                            </p>
-                                            <p class="fn__desc">
-                                                <!--<p><a rel="nofollow" target="_blank" style="color: rgb(146, 146, 69);"-->
-                                                <!--        href="#">Click Here To Visit Website</a>-->
-                                                <!--</p>-->
-                                            </p>
-                                        </div>
-                                    </div>
-
-                                    <!-- Return Profit X -->
-                                    <div class="item modal_item" data-index="9" data-category="saas finance">
-                                        <div class="img_holder">
-                                            <img src="img/thumb/square.jpg" alt="">
-                                            <div class="abs_img" data-bg-img="img/portfolio/returnprofitx.png"></div>
-                                        </div>
-                                        <div class="title_holder">
-                                            <p>Crypto Trading Platform</p>
-                                            <h3><a rel="nofollow" target="_blank"
-                                                    href="https://returnprofitx.shakeeliqbal.com/">Return Profit X</a>
-                                            </h3>
-                                        </div>
-                                        <div class="fn__hidden">
-                                            <p class="fn__cat">Buy and sell crypto <small> (<a rel="nofollow"
-                                                        target="_blank" style="color: rgb(92 92 66);"
-                                                        href="https://returnprofitx.shakeeliqbal.com/">Click Here To
-                                                        Visit
-                                                        Website</a>)</small></p>
-                                            <h3 class="fn__title">Return Profit X</h3>
-                                            <div class="img_holder">
-                                                <img src="img/thumb/square.jpg" alt="">
-                                                <div class="abs_img" data-bg-img="img/portfolio/returnprofitx.png">
+                                                <h3 class="fn__title">{{ $project->title }}</h3>
+                                                <div class="img_holder">
+                                                    <img src="{{ $imageUrl }}" alt="{{ $imageAlt }}" loading="lazy">
+                                                    <div class="abs_img" data-bg-img="{{ $imageUrl }}"></div>
                                                 </div>
-                                            </div>
-                                            <p class="fn__desc"></p>
-                                            <p class="fn__desc">
-                                            <p><a rel="nofollow" target="_blank" style="color: rgb(146, 146, 69);"
-                                                    href="https://returnprofitx.shakeeliqbal.com/">Click Here To Visit
-                                                    Website</a></p>
-                                            </p>
-                                        </div>
-                                    </div>
 
-                                    <!-- YoWorld Info -->
-                                    <div class="item modal_item" data-index="10" data-category="saas">
-                                        <div class="img_holder">
-                                            <img src="img/thumb/square.jpg" alt="">
-                                            <div class="abs_img" data-bg-img="img/portfolio/yoworldinfo.png"></div>
-                                        </div>
-                                        <div class="title_holder">
-                                            <p>Gaming Info Portal · Price Guide</p>
-                                            <h3><a rel="nofollow" target="_blank" href="https://yoworld.info/">YoWorld
-                                                    Info</a></h3>
-                                        </div>
-                                        <div class="fn__hidden">
-                                            <p class="fn__cat">Game information, price guide, and more! <small> (<a
-                                                        rel="nofollow" target="_blank" style="color: rgb(92 92 66);"
-                                                        href="https://yoworld.info/">Click Here To Visit
-                                                        Website</a>)</small></p>
-                                            <h3 class="fn__title">YoWorld Info</h3>
-                                            <div class="img_holder">
-                                                <img src="img/thumb/square.jpg" alt="">
-                                                <div class="abs_img" data-bg-img="img/portfolio/yoworldinfo.png"></div>
-                                            </div>
-                                            <p class="fn__desc"></p>
-                                            <p class="fn__desc">
-                                            <p><a rel="nofollow" target="_blank" style="color: rgb(146, 146, 69);"
-                                                    href="https://yoworld.info/">Click Here To Visit Website</a></p>
-                                            </p>
-                                        </div>
-                                    </div>
+                                                <p class="fn__desc">
+                                                    {!! $project->details_html !!}
+                                                </p>
 
-                                    <!-- Online Exam Syste -->
-                                    <div class="item modal_item" data-index="11" data-category="saas enterprise">
-                                        <div class="img_holder">
-                                            <img src="img/thumb/square.jpg" alt="">
-                                            <div class="abs_img" data-bg-img="img/portfolio/oes.png"></div>
-                                        </div>
-                                        <div class="title_holder">
-                                            <p>Online Exam SaaS · CBT Platform</p>
-                                            <h3><a rel="nofollow" target="_blank"
-                                                    href="http://oes.chipcosulting.org/">OES</a></h3>
-                                        </div>
-                                        <div class="fn__hidden">
-                                            <p class="fn__cat">Online Exam System 
-                                            <!--<small> (<a rel="nofollow"-->
-                                            <!--            target="_blank" style="color: rgb(92 92 66);"-->
-                                            <!--            href="http://oes.chipcosulting.org/">Click Here To Visit-->
-                                            <!--            Website</a>)</small>-->
-                                                        </p>
-                                            <h3 class="fn__title">OES</h3>
-                                            <div class="img_holder">
-                                                <img src="img/thumb/square.jpg" alt="">
-                                                <div class="abs_img" data-bg-img="img/portfolio/oes.png"></div>
-                                            </div>
-                                            <p class="fn__desc">OES is a computer-based test system that can be used to
-                                                conduct computer based tests online. OES is a technology-driven way to
-                                                simplify examination activities like defining exam patterns with
-                                                question banks,
-                                                defining exam timer, objective/ subjective question sections, conducting
-                                                exams using the computer or mobile devices in a paperless manner. OES
-                                                works on the following steps:
-                                            <ul>
-                                                <li> Admin can create test</li>
-                                                <li> Create project</li>
-                                                <ul>
-                                                    <li>MCQs Marks</li>
-                                                    <li>Discriptive Marks</li>
-                                                    <li>Test Time</li>
-                                                    <li>Active/Block Review Unattemplted Question</li>
-                                                    <li>Active/Block Review Attemplted Question</li>
-                                                    <li>Test Start Date/Time</li>
-                                                    <li>Test End Date/Time</li>
-                                                    <li>Test Instructions</li>
-                                                </ul>
-                                                <li> Create post against the project</li>
-                                                <li> Create questions in Test</li>
-                                                <ul>
-                                                    <li>Add single question</li>
-                                                    <ul>
-                                                        <li> Select project</li>
-                                                        <li> Select section for the test</li>
-                                                        <li> Select the question type (MCQs, Descriptive)</li>
-                                                    </ul>
-                                                    <li>Upload multiple questions</li>
-                                                    <li>Import questions from previous tests</li>
-
-                                                </ul>
-                                                <li> Add candidates against the validate post</li>
-                                                <li> Admin can create users and assign them roles like examiner</li>
-                                                <li> Examiner can check and mark discriptive questions</li>
-                                                <li> Admin/Examiner can generate test/project report</li>
-                                            </ul>
-                                            </p>
-                                            <p class="fn__desc">
-                                            <p>
-                                                <!--<a rel="nofollow" target="_blank" style="color: rgb(146, 146, 69);"-->
-                                                <!--    href="#">Click Here To Visit-->
-                                                <!--    Website</a>-->
+                                                @if ($project->external_link)
+                                                    <p class="fn__desc">
+                                                    <p><a rel="nofollow" target="_blank" style="color: rgb(146, 146, 69);" href="{{ $project->external_link }}">Click Here To Visit Website</a></p>
                                                     </p>
-                                            </p>
-
+                                                @endif
+                                            </div>
                                         </div>
-                                    </div>
+                                    @endforeach
 
                                 </div>
+
 
                             </div>
                         </div>
@@ -2468,73 +1845,16 @@
                                 <!-- /Services List -->
                                 <div class="resumo_fn_service_list">
                                     <ul>
-                                        <li>
-                                            <div class="item">
-                                                <div class="item_left">
-                                                    <h3>Custom Web Applications</h3>
-                                                    <p>Tailored Laravel-based web apps that solve your
-                                                        unique business problems from internal dashboards to full-scale
-                                                        platforms.</p>
+                                        @foreach ($portfolio->services as $service)
+                                            <li>
+                                                <div class="item">
+                                                    <div class="item_left">
+                                                        <h3>{{ $service->title }}</h3>
+                                                        <p>{{ $service->description }}</p>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="item">
-                                                <div class="item_left">
-                                                    <h3>SaaS Platform Development</h3>
-                                                    <p>Launch your own SaaS product with secure
-                                                        multi-tenant architecture, payment integration, and scalable
-                                                        backend
-                                                        systems.</p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="item">
-                                                <div class="item_left">
-                                                    <h3>eCommerce & Multi-Vendor Stores</h3>
-                                                    <p>Create fully functional online stores with
-                                                        product management, secure checkout, vendor management, and
-                                                        more.</p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="item">
-                                                <div class="item_left">
-                                                    <h3>API & Backend Development</h3>
-                                                    <p>Build robust REST APIs and backend logic that
-                                                        power mobile apps, frontend interfaces, and integrations.</p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="item">
-                                                <div class="item_left">
-                                                    <h3>Database Design & Optimization</h3>
-                                                    <p>Design efficient MySQL & PostgreSQL databases,
-                                                        improve performance, and manage large-scale data securely.</p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="item">
-                                                <div class="item_left">
-                                                    <h3>Enterprise Systems</h3>
-                                                    <p>Experience in developing healthcare platforms, HR systems,
-                                                        Inventory & Finance management, and more.</p>
-                                                </div>
-                                            </div>
-                                        </li>
-                                        <li>
-                                            <div class="item">
-                                                <div class="item_left">
-                                                    <h3>Performance Optimization</h3>
-                                                    <p>Improve your existing Laravel applications with
-                                                        speed enhancements, code refactoring, and security audits.</p>
-                                                </div>
-                                            </div>
-                                        </li>
+                                            </li>
+                                        @endforeach
                                     </ul>
                                 </div>
                             </div>
@@ -2566,94 +1886,15 @@
                                     </div>
                                     <div class="testimonials-grid">
 
-                                        <div class="item">
-                                            <div class="title_holder">
-                                                <p class="desc">“Working with Shakeel was a game-changer for our health
-                                                    tech platform. He streamlined our Laravel backend and built scalable
-                                                    APIs that significantly boosted performance and reliability.”</p>
-                                                <h2 class="title">Michael O’Connor</h2>
-                                                <h3 class="subtitle">Tech Lead, Remetric Health (USA)</h3>
+                                        @foreach ($portfolio->testimonials as $testimonial)
+                                            <div class="item">
+                                                <div class="title_holder">
+                                                    <p class="desc">&ldquo;{{ $testimonial->quote }}&rdquo;</p>
+                                                    <h2 class="title">{{ $testimonial->name }}</h2>
+                                                    <h3 class="subtitle">{{ $testimonial->role_company }}</h3>
+                                                </div>
                                             </div>
-                                        </div>
-
-                                        <div class="item">
-                                            <div class="title_holder">
-                                                <p class="desc">“Shakeel helped us develop a multi-vendor eCommerce
-                                                    platform from the ground up. His Laravel expertise ensured smooth
-                                                    functionality, payment integrations, and a solid backend structure.”
-                                                </p>
-                                                <h2 class="title">Sarah Khan</h2>
-                                                <h3 class="subtitle">Product Manager, ShopNow Hub (UK)</h3>
-                                            </div>
-                                        </div>
-
-                                        <div class="item">
-                                            <div class="title_holder">
-                                                <p class="desc">“We collaborated on a Laravel-based HR system, and
-                                                    Shakeel’s work on modules, API development, and database design made
-                                                    it a success. It's now actively used by multiple departments.”</p>
-                                                <h2 class="title">Imran Rafiq</h2>
-                                                <h3 class="subtitle">HR Systems Lead, CHIP Consulting (Pakistan)</h3>
-                                            </div>
-                                        </div>
-
-                                        <div class="item">
-                                            <div class="title_holder">
-                                                <p class="desc">“Shakeel rebuilt our analytics dashboard using PHP,
-                                                    Laravel, and MySQL. Thanks to his optimization, our report load time
-                                                    dropped from 45 seconds to under 5 seconds.”</p>
-                                                <h2 class="title">Hans Dekker</h2>
-                                                <h3 class="subtitle">CTO, DataSight Analytics (Netherlands)</h3>
-                                            </div>
-                                        </div>
-
-                                        <!-- Testimonial for Dairy Queen (American Food Chain Project) -->
-                                        <div class="item">
-                                            <div class="title_holder">
-                                                <p class="desc">“Shakeel worked on Dairy Queen’s Laravel-based finance
-                                                    management system. His backend development ensured smooth handling
-                                                    of daily sales data, monthly revenue reports, and custom analytics
-                                                    dashboards. For a brand as large and trusted as Dairy Queen,
-                                                    accuracy and performance were critical and Shakeel delivered
-                                                    both.”</p>
-                                                <h2 class="title">Amanda Lopez</h2>
-                                                <h3 class="subtitle">Project Manager, Dream Warrior Group (USA)</h3>
-                                            </div>
-                                        </div>
-
-
-                                        <!-- Testimonial for ARTdynamix® (Performing Arts SaaS) -->
-                                        <div class="item">
-                                            <div class="title_holder">
-                                                <p class="desc">“Shakeel played a key role in the Laravel development of
-                                                    ARTdynamix®, our CMS for performing arts organizations. His
-                                                    contributions helped us build a modular, customizable system used by
-                                                    theaters and museums across the U.S.”</p>
-                                                <h2 class="title">Amanda Lopez</h2>
-                                                <h3 class="subtitle">Project Manager, Dream Warrior Group (USA)</h3>
-                                            </div>
-                                        </div>
-
-
-                                        <div class="item">
-                                            <div class="title_holder">
-                                                <p class="desc">“Our Laravel SaaS platform had critical bugs until
-                                                    Shakeel stepped in. He quickly diagnosed the issues and refactored
-                                                    backend logic with great results.”</p>
-                                                <h2 class="title">Jasper Müller</h2>
-                                                <h3 class="subtitle">Founder, CodeBridge Systems (Germany)</h3>
-                                            </div>
-                                        </div>
-
-                                        <div class="item">
-                                            <div class="title_holder">
-                                                <p class="desc">“We needed a backend developer for our inventory system.
-                                                    Shakeel developed admin dashboards, REST APIs, and ensured top-notch
-                                                    security and performance.”</p>
-                                                <h2 class="title">Nida Patel</h2>
-                                                <h3 class="subtitle">Operations Manager, StockPilot ERP (UAE)</h3>
-                                            </div>
-                                        </div>
+                                        @endforeach
 
                                     </div>
                                 </div>
@@ -2689,7 +1930,8 @@
 
                                 <!-- Contact Form -->
                                 <form class="contact_form" id="contactForm" action="/" method="post" autocomplete="off"
-                                    data-email="contact@shakeeliqbal.com">
+                                    data-email="{{ $portfolio->contact_email }}"
+                                    data-action-url="{{ route('portfolio.contact.send', $portfolio->slug) }}">
 
                                     <!--
                                     Don't remove below code in avoid to work contact form properly.
@@ -2737,12 +1979,14 @@
 
                                 <!-- Contact Info -->
                                 <div class="resumo_fn_contact_info">
-                                    <p>Address</p>
-                                    <h3>Islamabad, Pakistan</h3>
-                                    <p>Phone/Whatsapp</p>
-                                    <h3><a href="tel:+923029865526">+92 302 9865526</a></h3>
-                                    <p><a class="fn__link"
-                                            href="mailto:contact@shakeeliqbal.com">contact@shakeeliqbal.com</a></p>
+                                    @if ($portfolio->whatsapp_number)
+                                        <p>Phone/Whatsapp</p>
+                                        <h3><a href="tel:{{ $portfolio->whatsapp_number }}">{{ $portfolio->whatsapp_number }}</a></h3>
+                                    @endif
+                                    @if ($portfolio->contact_email)
+                                        <p><a class="fn__link"
+                                                href="mailto:{{ $portfolio->contact_email }}">{{ $portfolio->contact_email }}</a></p>
+                                    @endif
                                 </div>
                                 <!-- /Contact Info -->
 
@@ -2781,19 +2025,22 @@
                         <div class="border1"></div>
                         <div class="border2"></div>
 
+                        @php
+                            $profileImageUrl = $portfolio->about?->profile_image_url ?: asset('img/shakeel1.png');
+                            $profileImageAlt = $portfolio->about?->alt_text ?: trim(($portfolio->user?->name ?: '').($portfolio->hero_subtitle ? ' — '.$portfolio->hero_subtitle : ''));
+                        @endphp
                         <div class="img_holder">
-                            <img src="img/thumb/square.jpg" alt="">
-                            <!-- <div class="abs_img" data-bg-img="img/shakeel3.jpg"></div> -->
-                            <div class="abs_img" id="background-img"></div>
+                            <img src="{{ $profileImageUrl }}" alt="{{ $profileImageAlt }}">
+                            <div class="abs_img" id="background-img" data-bg-img="{{ $profileImageUrl }}"></div>
                         </div>
                         <div class="title_holder">
                             <h5>Hi There! I am</h5>
                             <h3>
                                 <span class="animated_title">
-                                    <span class="title_in">Shakeel Iqbal Cheema</span>
-                                    <span class="title_in">Laravel Developer</span>
-                                    <span class="title_in">Remote Backend Specialist</span>
-                                    <span class="title_in">Freelance Web Application Expert</span>
+                                    <span class="title_in">{{ $portfolio->user?->name }}</span>
+                                    @if ($portfolio->hero_subtitle)
+                                        <span class="title_in">{{ $portfolio->hero_subtitle }}</span>
+                                    @endif
                                 </span>
                             </h3>
                         </div>
@@ -2803,10 +2050,12 @@
 
                     <link rel="stylesheet"
                         href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
-                    <a href="https://api.whatsapp.com/send?phone=+923029865526&text=Hello! I would like to inquire about your services."
-                        class="float" target="_blank">
-                        <i class="fa fa-whatsapp my-float"></i>
-                    </a>
+                    @if ($portfolio->whatsapp_number)
+                        <a href="https://api.whatsapp.com/send?phone={{ urlencode($portfolio->whatsapp_number) }}&text=Hello! I would like to inquire about your services."
+                            class="float" target="_blank">
+                            <i class="fa fa-whatsapp my-float"></i>
+                        </a>
+                    @endif
 
 
                 </div>
@@ -2828,23 +2077,7 @@
 
     </div>
     <!-- /Wrapper All -->
-    <!-- random image code start -->
-    <script>
-        const images = [
-            'img/shakeel1.png',
-            'img/shakeel1.png',
-            'img/shakeel1.png',
-        ];
-
-        const backgroundImg = document.getElementById('background-img');
-
-        // Generate a random number between 0 and the length of the images array
-        const randomIndex = Math.floor(Math.random() * images.length);
-
-        // Set the background image of the element to the random image
-        backgroundImg.style.backgroundImage = `url(${images[randomIndex]})`;
-    </script>
-    <!-- random image code end -->
+    <!-- Profile image background is applied generically by js/init.js's BgImg() handler via the [data-bg-img] attribute. -->
 
     <!-- calculate my age start -->
     <script>
@@ -2866,34 +2099,49 @@
         let page = document.title.split('|')[0].trim() || 'portfolio';
         let screenRes = window.screen.width + 'x' + window.screen.height;
 
-        fetch('contact/log_visitor.php?page=' + encodeURIComponent(page) + '&screen=' + screenRes);
+        const sessionToken = (window.crypto && typeof window.crypto.randomUUID === 'function')
+            ? window.crypto.randomUUID()
+            : 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+                const r = Math.random() * 16 | 0;
+                const v = c === 'x' ? r : (r & 0x3 | 0x8);
+                return v.toString(16);
+            });
 
-        // Portfolio: inject per-card description + arrow button
-        const cardDescriptions = {
-            1: "US healthcare platform for real-time remote patient monitoring across connected devices and clinics.",
-            2: "CMS built for performing arts organizations — ticketing, fundraising, and SEO in one place.",
-            3: "Telemedicine platform with AI triage, secure medical records, and integrated payments.",
-            4: "Finance management system for a major US food franchise with multi-store sales, payroll and reporting.",
-            5: "Multi-vendor eCommerce marketplace connecting buyers and sellers of construction materials.",
-            6: "SEO SaaS that helps writers rank higher by tracking keyword usage inside their content in real time.",
-            7: "Online ordering + barcode-tracked logistics system used across outlets for live order status updates.",
-            8: "Complete HR platform covering payroll, leave, recruitment, appraisal, and employee records.",
-            9: "Crypto trading platform for buying, selling, and managing digital-asset portfolios.",
-            10: "Gaming information portal with a live price guide and item wiki for YoWorld players.",
-            11: "Online exam SaaS for computer-based testing with question banks, timers, and auto-grading."
-        };
+        fetch(window.portfolioLogVisitorUrl + '?page=' + encodeURIComponent(page) + '&screen=' + screenRes + '&session_token=' + encodeURIComponent(sessionToken));
+
+        const pageLoadTime = Date.now();
+        let durationSent = false;
+
+        function sendDuration() {
+            const elapsedSeconds = Math.round((Date.now() - pageLoadTime) / 1000);
+
+            if (navigator.sendBeacon) {
+                navigator.sendBeacon(window.portfolioDurationUrl, new URLSearchParams({
+                    session_token: sessionToken,
+                    duration_seconds: elapsedSeconds,
+                }));
+            }
+
+            durationSent = true;
+        }
+
+        document.addEventListener('visibilitychange', function() {
+            if (document.visibilityState === 'hidden') {
+                sendDuration();
+            }
+        });
+
+        window.addEventListener('beforeunload', function() {
+            if (!durationSent) {
+                sendDuration();
+            }
+        });
+
+        // Portfolio: inject arrow button (card descriptions are now rendered server-side)
         const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>';
 
         const portfolioItems = document.querySelectorAll('.portfolio-grid .item');
         portfolioItems.forEach(item => {
-            const idx = item.dataset.index;
-            const titleHolder = item.querySelector('.title_holder');
-            if (titleHolder && cardDescriptions[idx] && !titleHolder.querySelector('.card-desc')) {
-                const p = document.createElement('p');
-                p.className = 'card-desc';
-                p.textContent = cardDescriptions[idx];
-                titleHolder.appendChild(p);
-            }
             if (!item.querySelector('.card-arrow')) {
                 const a = document.createElement('span');
                 a.className = 'card-arrow';
@@ -2947,16 +2195,15 @@
     });
     </script>
     <!-- Scripts -->
-    <script src="js/jquery.js?ver=3"></script>
-    <script src="js/typed.js?ver=3"></script>
-    <script src="js/owl-carousel.js?ver=3"></script>
-    <script src="js/waypoints.js?ver=3"></script>
-    <script src="js/nicescroll.js?ver=3"></script>
-    <!--[if lt IE 10]> <script src="js/ie8.js?ver=3"></script> <![endif]-->
-    <script src="js/init.js?ver=3"></script>
+    <script src="{{ asset('js/jquery.js') }}?ver=3"></script>
+    <script src="{{ asset('js/typed.js') }}?ver=3"></script>
+    <script src="{{ asset('js/owl-carousel.js') }}?ver=3"></script>
+    <script src="{{ asset('js/waypoints.js') }}?ver=3"></script>
+    <script src="{{ asset('js/nicescroll.js') }}?ver=3"></script>
+    <!--[if lt IE 10]> <script src="{{ asset('js/ie8.js') }}?ver=3"></script> <![endif]-->
+    <script src="{{ asset('js/init.js') }}?ver=3"></script>
     <!-- /Scripts -->
-<script src="js/send-email.js?ver=3"></script>
+<script src="{{ asset('js/send-email.js') }}?ver=3"></script>
 </body>
 
 </html>
-@endverbatim
