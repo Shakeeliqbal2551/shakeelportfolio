@@ -853,13 +853,18 @@
 
         .venture-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            width: 100%;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 24px;
             margin-top: 40px;
+        }
+        @media (max-width: 700px) {
+            .venture-grid { grid-template-columns: minmax(0, 1fr); gap: 20px; }
         }
         .venture-card {
             display: flex;
             flex-direction: column;
+            min-width: 0;
             background: var(--surface);
             border: 1px solid var(--border);
             border-radius: 14px;
@@ -871,7 +876,9 @@
             transform: translateY(-3px);
         }
         .venture-card-img {
+            width: 100%;
             height: 170px;
+            flex-shrink: 0;
             background-size: cover;
             background-position: center;
             background-color: var(--surface-hi);
@@ -902,6 +909,7 @@
             font-family: var(--serif) !important;
             font-size: 20px !important;
             color: var(--text-hi) !important;
+            overflow-wrap: break-word;
         }
         .venture-your-title {
             margin: 0 0 12px !important;

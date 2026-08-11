@@ -1,11 +1,16 @@
 <?php
 
+use App\Models\ContactMessage;
 use App\Models\Portfolio;
 use Illuminate\Support\Facades\Auth;
 use Livewire\Component;
 
 new class extends Component {
     public int $portfolioId;
+
+    public ?ContactMessage $viewingMessage = null;
+
+    public ?int $deletingMessageId = null;
 
     public function mount(): void
     {
@@ -14,6 +19,33 @@ new class extends Component {
         abort_if(! $portfolio, 404);
 
         $this->portfolioId = $portfolio->id;
+    }
+
+    public function viewMessage(int $id): void
+    {
+        $this->viewingMessage = $this->portfolio->contactMessages()->findOrFail($id);
+
+        $this->modal('message-detail')->show();
+    }
+
+    public function confirmDeleteMessage(int $id): void
+    {
+        $this->deletingMessageId = $id;
+
+        $this->modal('message-detail')->close();
+        $this->modal('message-delete')->show();
+    }
+
+    public function deleteMessage(): void
+    {
+        if ($this->deletingMessageId) {
+            $this->portfolio->contactMessages()->where('id', $this->deletingMessageId)->delete();
+        }
+
+        $this->deletingMessageId = null;
+        $this->viewingMessage = null;
+        $this->modal('message-delete')->close();
+        $this->dispatch('message-deleted');
     }
 
     public function getPortfolioProperty(): Portfolio
@@ -90,6 +122,10 @@ new class extends Component {
         </a>
     </div>
 
+    <div class="mb-2">
+        <x-action-message on="message-deleted">{{ __('Message deleted.') }}</x-action-message>
+    </div>
+
     <div class="stat-grid-2col">
         <div class="dash-card dash-card-flush">
             <div class="dash-card-header">
@@ -98,13 +134,13 @@ new class extends Component {
             </div>
             <div class="dash-divide">
                 @forelse ($this->recentMessages as $message)
-                    <div class="p-3">
+                    <button type="button" wire:click="viewMessage({{ $message->id }})" class="w-full p-3 text-left transition hover:bg-zinc-50 dark:hover:bg-zinc-800/50">
                         <div class="flex items-center justify-between">
                             <flux:text class="dash-text-primary font-medium">{{ $message->name }}</flux:text>
                             <flux:text class="text-xs text-zinc-400">{{ $message->submission_time?->diffForHumans() }}</flux:text>
                         </div>
                         <flux:text class="text-zinc-500">{{ Illuminate\Support\Str::limit($message->message, 90) }}</flux:text>
-                    </div>
+                    </button>
                 @empty
                     <div class="p-6 text-center">
                         <flux:text class="text-zinc-500">{{ __('No messages yet.') }}</flux:text>
@@ -134,4 +170,120 @@ new class extends Component {
             </div>
         </div>
     </div>
+
+    <flux:modal name="message-detail" class="max-w-lg">
+        @if ($viewingMessage)
+            <div class="space-y-4">
+                <flux:heading size="lg">{{ __('Message Details') }}</flux:heading>
+
+                <div class="space-y-3">
+                    <div>
+                        <flux:text class="text-xs text-zinc-400">{{ __('From') }}</flux:text>
+                        <flux:text class="dash-text-primary font-medium">{{ $viewingMessage->name }}</flux:text>
+                    </div>
+
+                    @if ($viewingMessage->email)
+                        <div>
+                            <flux:text class="text-xs text-zinc-400">{{ __('Email') }}</flux:text>
+                            <flux:text class="dash-text-primary">
+                                <a href="mailto:{{ $viewingMessage->email }}" class="dash-link">{{ $viewingMessage->email }}</a>
+                            </flux:text>
+                        </div>
+                    @endif
+
+                    @if ($viewingMessage->phone)
+                        <div>
+                            <flux:text class="text-xs text-zinc-400">{{ __('Phone') }}</flux:text>
+                            <flux:text class="dash-text-primary">{{ $viewingMessage->phone }}</flux:text>
+                        </div>
+                    @endif
+
+                    <div>
+                        <flux:text class="text-xs text-zinc-400">{{ __('Received') }}</flux:text>
+                        <flux:text class="dash-text-primary">
+                            {{ $viewingMessage->submission_time?->format('M j, Y g:i A') }}
+                            <span class="text-zinc-400">({{ $viewingMessage->submission_time?->diffForHumans() }})</span>
+                        </flux:text>
+                    </div>
+
+                    <div>
+                        <flux:text class="text-xs text-zinc-400">{{ __('Message') }}</flux:text>
+                        <flux:text class="dash-text-primary whitespace-pre-wrap">{{ $viewingMessage->message }}</flux:text>
+                    </div>
+                </div>
+
+                @php
+                    $geoParts = collect([$viewingMessage->city, $viewingMessage->region, $viewingMessage->country])
+                        ->filter(fn ($v) => $v && $v !== 'Unknown' && $v !== 'Local');
+                    $geoLabel = $geoParts->isNotEmpty() ? $geoParts->implode(', ') : '—';
+                    $hasCoords = filled($viewingMessage->latitude) && filled($viewingMessage->longitude);
+                    $mapLink = $hasCoords ? "https://maps.google.com/?q={$viewingMessage->latitude},{$viewingMessage->longitude}" : null;
+                @endphp
+
+                <div class="dash-card space-y-3">
+                    <flux:heading size="sm">{{ __('Visitor Details') }}</flux:heading>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <flux:text class="text-xs text-zinc-400">{{ __('IP Address') }}</flux:text>
+                            <flux:text class="dash-text-primary font-mono text-xs">{{ $viewingMessage->ip_address ?? '—' }}</flux:text>
+                        </div>
+                        <div>
+                            <flux:text class="text-xs text-zinc-400">{{ __('Location') }}</flux:text>
+                            <flux:text class="dash-text-primary">
+                                {{ $geoLabel }}
+                                @if ($mapLink)
+                                    · <a href="{{ $mapLink }}" target="_blank" rel="noopener noreferrer" class="dash-link">{{ __('Map') }}</a>
+                                @endif
+                            </flux:text>
+                        </div>
+                        <div>
+                            <flux:text class="text-xs text-zinc-400">{{ __('Browser') }}</flux:text>
+                            <flux:text class="dash-text-primary">{{ $viewingMessage->browser ?? '—' }}</flux:text>
+                        </div>
+                        <div>
+                            <flux:text class="text-xs text-zinc-400">{{ __('OS') }}</flux:text>
+                            <flux:text class="dash-text-primary">{{ $viewingMessage->os ?? '—' }}</flux:text>
+                        </div>
+                        <div>
+                            <flux:text class="text-xs text-zinc-400">{{ __('Device') }}</flux:text>
+                            <flux:text class="dash-text-primary">{{ $viewingMessage->device_type ?? '—' }}</flux:text>
+                        </div>
+                    </div>
+
+                    @if ($viewingMessage->user_agent)
+                        <div>
+                            <flux:text class="text-xs text-zinc-400">{{ __('User Agent') }}</flux:text>
+                            <flux:text class="dash-text-primary text-xs break-all">{{ $viewingMessage->user_agent }}</flux:text>
+                        </div>
+                    @endif
+                </div>
+
+                <div class="flex justify-between">
+                    <flux:button variant="danger" icon="trash" wire:click="confirmDeleteMessage({{ $viewingMessage->id }})">
+                        {{ __('Delete') }}
+                    </flux:button>
+
+                    <flux:modal.close>
+                        <flux:button variant="filled">{{ __('Close') }}</flux:button>
+                    </flux:modal.close>
+                </div>
+            </div>
+        @endif
+    </flux:modal>
+
+    <flux:modal name="message-delete" class="max-w-md">
+        <div class="space-y-6">
+            <flux:heading size="lg">{{ __('Delete this message?') }}</flux:heading>
+            <flux:text>{{ __("This will move the message to trash. It won't appear in your inbox anymore.") }}</flux:text>
+
+            <div class="flex justify-end space-x-2 rtl:space-x-reverse">
+                <flux:modal.close>
+                    <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
+                </flux:modal.close>
+
+                <flux:button variant="danger" wire:click="deleteMessage">{{ __('Delete') }}</flux:button>
+            </div>
+        </div>
+    </flux:modal>
 </section>
