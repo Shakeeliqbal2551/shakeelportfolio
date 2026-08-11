@@ -64,3 +64,484 @@ select:focus[data-flux-control] {
 /* \[:where(&)\]:size-4 {
     @apply size-4;
 } */
+
+/*
+ * NOTE: raw `lg:`/`sm:`/`md:`/`hover:`/`dark:` etc. variant-prefixed Tailwind
+ * classes written directly in .blade.php files do not compile on this
+ * project's Tailwind/Oxide build (confirmed: plain utilities scan correctly,
+ * but the Oxide content-scanner never extracts variant-prefixed class names
+ * as candidates, on this platform/version, even after a clean reinstall).
+ * Variant rules applied here via @apply DO compile correctly, so responsive/
+ * hover/dark behavior needed by a Blade view should be defined as a named
+ * class below and referenced by name in the view, rather than written as
+ * raw Tailwind variant syntax in the Blade file itself.
+ */
+.stat-grid {
+    @apply grid grid-cols-2 gap-3;
+}
+
+@media (min-width: 64rem) {
+    .stat-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+}
+
+.stat-grid-2col {
+    @apply grid gap-4;
+}
+
+@media (min-width: 64rem) {
+    .stat-grid-2col {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+.dash-card {
+    @apply rounded-lg border border-zinc-200 p-3;
+}
+
+.dash-card-flush {
+    padding: 0;
+}
+
+.dark .dash-card {
+    border-color: var(--color-zinc-700);
+}
+
+.dash-card-link {
+    @apply rounded-lg border border-zinc-200 p-3 transition;
+}
+
+.dash-card-link:hover {
+    border-color: var(--color-zinc-300);
+}
+
+.dark .dash-card-link {
+    border-color: var(--color-zinc-700);
+}
+
+.dark .dash-card-link:hover {
+    border-color: var(--color-zinc-600);
+}
+
+.dash-card-header {
+    @apply flex items-center justify-between border-b border-zinc-200 p-3;
+}
+
+.dark .dash-card-header {
+    border-color: var(--color-zinc-700);
+}
+
+.dash-divide > * + * {
+    @apply border-t border-zinc-100;
+}
+
+.dark .dash-divide > * + * {
+    border-color: var(--color-zinc-800);
+}
+
+.dash-text-primary {
+    @apply text-zinc-900;
+}
+
+.dark .dash-text-primary {
+    color: var(--color-zinc-100);
+}
+
+.dash-table-wrap {
+    @apply overflow-x-auto rounded-lg border border-zinc-200;
+}
+
+.dark .dash-table-wrap {
+    border-color: var(--color-zinc-700);
+}
+
+.dash-table-head {
+    @apply border-b border-zinc-200 bg-zinc-50;
+}
+
+.dark .dash-table-head {
+    border-color: var(--color-zinc-700);
+    background-color: var(--color-zinc-900);
+}
+
+.dash-row-divide tr {
+    @apply border-b border-zinc-100;
+}
+
+.dash-row-divide tr:last-child {
+    border-bottom-width: 0;
+}
+
+.dark .dash-row-divide tr {
+    border-color: var(--color-zinc-800);
+}
+
+.dash-list-item {
+    @apply flex items-center justify-between border-b border-zinc-100 py-1.5;
+}
+
+.dash-list-item:last-child {
+    border-bottom-width: 0;
+}
+
+.dark .dash-list-item {
+    border-color: var(--color-zinc-800);
+}
+
+.dash-filter-row {
+    @apply grid grid-cols-1 gap-3;
+}
+
+@media (min-width: 40rem) {
+    .dash-filter-row {
+        grid-template-columns: minmax(0, 24rem);
+    }
+}
+
+.dash-table-cell-truncate {
+    @apply max-w-[10rem] truncate;
+}
+
+.dash-link {
+    @apply text-zinc-700 underline decoration-zinc-300 underline-offset-2;
+}
+
+.dash-link:hover {
+    color: var(--color-zinc-950);
+}
+
+.dark .dash-link {
+    color: var(--color-zinc-300);
+}
+
+.dark .dash-link:hover {
+    color: var(--color-zinc-50);
+}
+
+.dash-filters-bar {
+    @apply flex flex-col gap-3;
+}
+
+@media (min-width: 64rem) {
+    .dash-filters-bar {
+        flex-direction: row;
+        align-items: flex-end;
+        flex-wrap: wrap;
+    }
+}
+
+.dash-filter-field {
+    @apply flex flex-col gap-1;
+}
+
+.dash-filter-search {
+    width: 100%;
+}
+
+@media (min-width: 40rem) {
+    .dash-filter-search {
+        width: 20rem;
+    }
+}
+
+.dash-filter-date {
+    width: 100%;
+}
+
+@media (min-width: 40rem) {
+    .dash-filter-date {
+        width: 11rem;
+    }
+}
+
+.dash-filter-select {
+    width: 100%;
+}
+
+@media (min-width: 40rem) {
+    .dash-filter-select {
+        width: 8rem;
+    }
+}
+
+/* Custom pagination bar (Laravel's default pagination view uses raw
+   lg:/hover: Tailwind variants that don't compile in this project, and its
+   contrast doesn't read clearly against the dark theme — build our own). */
+.dash-pagination {
+    @apply flex flex-wrap items-center justify-between gap-3;
+}
+
+.dash-pagination-info {
+    @apply text-sm text-zinc-500;
+}
+
+.dash-pagination-links {
+    @apply flex flex-wrap items-center gap-1;
+}
+
+.dash-page-link {
+    @apply flex h-8 min-w-8 items-center justify-center rounded-md border border-zinc-200 px-2 text-sm text-zinc-600;
+}
+
+.dash-page-link:hover {
+    background-color: var(--color-zinc-50);
+    border-color: var(--color-zinc-300);
+}
+
+.dark .dash-page-link {
+    border-color: var(--color-zinc-700);
+    color: var(--color-zinc-300);
+}
+
+.dark .dash-page-link:hover {
+    background-color: var(--color-zinc-800);
+    border-color: var(--color-zinc-600);
+}
+
+.dash-page-link-active {
+    @apply flex h-8 min-w-8 items-center justify-center rounded-md px-2 text-sm font-semibold;
+    background-color: var(--color-zinc-900);
+    color: var(--color-white);
+    border: 1px solid var(--color-zinc-900);
+}
+
+.dark .dash-page-link-active {
+    background-color: var(--color-white);
+    color: var(--color-zinc-900);
+    border-color: var(--color-white);
+}
+
+.dash-page-link-disabled {
+    @apply flex h-8 min-w-8 items-center justify-center rounded-md border border-zinc-100 px-2 text-sm text-zinc-300;
+    cursor: default;
+}
+
+.dark .dash-page-link-disabled {
+    border-color: var(--color-zinc-800);
+    color: var(--color-zinc-700);
+}
+
+.dash-page-ellipsis {
+    @apply flex h-8 min-w-8 items-center justify-center text-sm text-zinc-400;
+}
+
+/* Date range picker */
+.dash-daterange-trigger {
+    @apply flex w-full items-center justify-between gap-2 rounded-lg border border-zinc-200 px-3 py-2 text-sm text-zinc-700;
+    background-color: var(--color-white);
+}
+
+.dash-daterange-trigger:hover {
+    border-color: var(--color-zinc-300);
+}
+
+.dark .dash-daterange-trigger {
+    border-color: var(--color-zinc-700);
+    background-color: var(--color-zinc-900);
+    color: var(--color-zinc-200);
+}
+
+.dark .dash-daterange-trigger:hover {
+    border-color: var(--color-zinc-600);
+}
+
+.dash-daterange-panel {
+    @apply absolute z-50 mt-2 flex flex-col overflow-hidden rounded-xl border border-zinc-200 shadow-lg;
+    background-color: var(--color-white);
+    width: 20rem;
+}
+
+@media (min-width: 48rem) {
+    .dash-daterange-panel {
+        width: 44rem;
+    }
+}
+
+.dark .dash-daterange-panel {
+    border-color: var(--color-zinc-700);
+    background-color: var(--color-zinc-900);
+}
+
+.dash-daterange-body {
+    @apply flex flex-col;
+}
+
+@media (min-width: 48rem) {
+    .dash-daterange-body {
+        flex-direction: row;
+    }
+}
+
+.dash-daterange-presets {
+    @apply flex flex-col gap-0.5 border-b border-zinc-100 p-3;
+    width: 100%;
+}
+
+@media (min-width: 48rem) {
+    .dash-daterange-presets {
+        border-bottom: none;
+        border-right: 1px solid var(--color-zinc-100);
+        width: 10rem;
+        flex-shrink: 0;
+    }
+}
+
+.dark .dash-daterange-presets {
+    border-color: var(--color-zinc-800);
+}
+
+.dash-daterange-preset {
+    @apply rounded-md px-3 py-1.5 text-left text-sm text-zinc-600;
+}
+
+.dash-daterange-preset:hover {
+    background-color: var(--color-zinc-100);
+}
+
+.dark .dash-daterange-preset {
+    color: var(--color-zinc-300);
+}
+
+.dark .dash-daterange-preset:hover {
+    background-color: var(--color-zinc-800);
+}
+
+.dash-daterange-preset-active {
+    @apply rounded-md px-3 py-1.5 text-left text-sm font-medium;
+    background-color: var(--color-emerald-600);
+    color: var(--color-white);
+}
+
+.dash-daterange-calendars {
+    @apply flex-1 p-3;
+}
+
+.dash-daterange-months {
+    @apply flex flex-col gap-4;
+}
+
+@media (min-width: 48rem) {
+    .dash-daterange-months {
+        flex-direction: row;
+        gap: 1.5rem;
+    }
+}
+
+.dash-daterange-month {
+    @apply flex-1;
+}
+
+.dash-daterange-month-header {
+    @apply mb-2 flex items-center justify-between text-sm font-semibold text-zinc-800;
+}
+
+.dark .dash-daterange-month-header {
+    color: var(--color-zinc-100);
+}
+
+.dash-daterange-nav {
+    @apply flex h-6 w-6 items-center justify-center rounded text-zinc-400;
+}
+
+.dash-daterange-nav:hover {
+    background-color: var(--color-zinc-100);
+    color: var(--color-zinc-700);
+}
+
+.dark .dash-daterange-nav:hover {
+    background-color: var(--color-zinc-800);
+    color: var(--color-zinc-200);
+}
+
+.dash-daterange-grid {
+    @apply grid grid-cols-7 gap-y-1 text-center text-xs;
+}
+
+.dash-daterange-weekday {
+    @apply py-1 font-medium text-zinc-400;
+}
+
+.dark .dash-daterange-weekday {
+    color: var(--color-zinc-500);
+}
+
+.dash-daterange-day {
+    @apply flex h-8 w-8 items-center justify-center rounded-full text-sm text-zinc-700;
+}
+
+.dash-daterange-day:hover {
+    background-color: var(--color-zinc-100);
+}
+
+.dark .dash-daterange-day {
+    color: var(--color-zinc-300);
+}
+
+.dark .dash-daterange-day:hover {
+    background-color: var(--color-zinc-800);
+}
+
+.dash-daterange-day-muted {
+    @apply flex h-8 w-8 items-center justify-center rounded-full text-sm;
+    color: var(--color-zinc-300);
+}
+
+.dark .dash-daterange-day-muted {
+    color: var(--color-zinc-700);
+}
+
+.dash-daterange-day-inrange {
+    @apply flex h-8 w-8 items-center justify-center text-sm text-zinc-700;
+    background-color: var(--color-emerald-50);
+}
+
+.dark .dash-daterange-day-inrange {
+    background-color: color-mix(in srgb, var(--color-emerald-600) 20%, transparent);
+    color: var(--color-zinc-100);
+}
+
+.dash-daterange-day-endpoint {
+    @apply flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold text-white;
+    background-color: var(--color-emerald-600);
+}
+
+.dash-daterange-footer {
+    @apply flex items-center justify-between gap-3 border-t border-zinc-100 px-3 py-2;
+}
+
+.dark .dash-daterange-footer {
+    border-color: var(--color-zinc-800);
+}
+
+.dash-daterange-footer-text {
+    @apply text-sm text-zinc-500;
+}
+
+.dash-daterange-btn-cancel {
+    @apply rounded-md border border-zinc-200 px-3 py-1.5 text-sm font-medium text-zinc-700;
+    background-color: var(--color-zinc-100);
+}
+
+.dash-daterange-btn-cancel:hover {
+    background-color: var(--color-zinc-200);
+}
+
+.dark .dash-daterange-btn-cancel {
+    border-color: var(--color-zinc-700);
+    background-color: var(--color-zinc-800);
+    color: var(--color-zinc-200);
+}
+
+.dark .dash-daterange-btn-cancel:hover {
+    background-color: var(--color-zinc-700);
+}
+
+.dash-daterange-btn-apply {
+    @apply rounded-md px-4 py-1.5 text-sm font-semibold text-white;
+    background-color: var(--color-emerald-600);
+}
+
+.dash-daterange-btn-apply:hover {
+    background-color: var(--color-emerald-700);
+}

@@ -28,6 +28,8 @@ class VisitorLog extends Model
         'visit_time',
         'duration_seconds',
         'session_token',
+        'referrer',
+        'isp',
     ];
 
     protected function casts(): array

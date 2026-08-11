@@ -137,7 +137,7 @@ new class extends Component {
         <div>
             <flux:input wire:model="featured_image" :label="__('Featured Image')" type="file" accept="image/*" />
             @if ($existingFeaturedImagePath)
-                <img src="{{ \Illuminate\Support\Facades\Storage::url($existingFeaturedImagePath) }}" alt="{{ __('Current featured image') }}" class="mt-2 h-24 w-24 rounded-lg object-cover">
+                <img src="{{ \App\Models\Post::resolveFileUrl($existingFeaturedImagePath) }}" alt="{{ __('Current featured image') }}" class="mt-2 h-24 w-24 rounded-lg object-cover">
             @endif
         </div>
 

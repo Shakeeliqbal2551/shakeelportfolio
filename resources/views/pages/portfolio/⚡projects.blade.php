@@ -175,7 +175,7 @@ new class extends Component {
         });
     }
 
-    protected function resetForm(): void
+    public function resetForm(): void
     {
         $this->reset(['editingId', 'title', 'description', 'details', 'image', 'existingImagePath', 'image_alt', 'tags', 'external_link', 'featured', 'company_name', 'your_title']);
         $this->role = ProjectRole::Client->value;
@@ -204,7 +204,7 @@ new class extends Component {
             <div class="flex items-center justify-between gap-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
                 <div class="flex items-center gap-3">
                     @if ($project->image_path)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url($project->image_path) }}" alt="{{ $project->title }}" class="h-12 w-12 rounded-lg object-cover">
+                        <img src="{{ $project->image_url }}" alt="{{ $project->title }}" class="h-12 w-12 rounded-lg object-cover">
                     @endif
                     <div>
                         <div class="flex items-center gap-2">
@@ -240,7 +240,7 @@ new class extends Component {
             <div>
                 <flux:input wire:model="image" :label="__('Image')" type="file" accept="image/*" />
                 @if ($existingImagePath)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::url($existingImagePath) }}" alt="{{ __('Current image') }}" class="mt-2 h-24 w-24 rounded-lg object-cover">
+                    <img src="{{ \App\Models\Project::resolveFileUrl($existingImagePath) }}" alt="{{ __('Current image') }}" class="mt-2 h-24 w-24 rounded-lg object-cover">
                 @endif
             </div>
 

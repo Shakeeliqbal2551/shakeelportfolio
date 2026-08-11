@@ -123,7 +123,7 @@ new class extends Component {
         });
     }
 
-    protected function resetForm(): void
+    public function resetForm(): void
     {
         $this->reset(['editingId', 'institution', 'degree', 'date_range', 'description']);
         $this->resetValidation();

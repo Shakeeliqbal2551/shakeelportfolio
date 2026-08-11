@@ -76,7 +76,7 @@ new class extends Component {
             <div class="flex items-center justify-between gap-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
                 <div class="flex items-center gap-3">
                     @if ($post->featured_image_path)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url($post->featured_image_path) }}" alt="{{ $post->title }}" class="h-12 w-12 rounded-lg object-cover">
+                        <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" class="h-12 w-12 rounded-lg object-cover">
                     @endif
                     <div>
                         <div class="flex items-center gap-2">

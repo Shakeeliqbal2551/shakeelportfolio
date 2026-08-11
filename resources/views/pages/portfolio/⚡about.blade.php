@@ -135,7 +135,7 @@ new class extends Component {
                 @if ($about->resume_path)
                     <flux:text class="mt-2">
                         {{ __('Current file:') }}
-                        <flux:link :href="\Illuminate\Support\Facades\Storage::url($about->resume_path)" target="_blank">{{ __('View resume') }}</flux:link>
+                        <flux:link :href="$about->resume_url" target="_blank">{{ __('View resume') }}</flux:link>
                     </flux:text>
                 @endif
             </div>
@@ -143,7 +143,7 @@ new class extends Component {
             <div>
                 <flux:input wire:model="profile_image" :label="__('Profile Image')" type="file" accept="image/*" />
                 @if ($about->profile_image_path)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::url($about->profile_image_path) }}" alt="{{ __('Profile image') }}" class="mt-2 h-24 w-24 rounded-full object-cover">
+                    <img src="{{ $about->profile_image_url }}" alt="{{ __('Profile image') }}" class="mt-2 h-24 w-24 rounded-full object-cover">
                 @endif
             </div>
 

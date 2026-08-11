@@ -120,7 +120,7 @@ new class extends Component {
         });
     }
 
-    protected function resetForm(): void
+    public function resetForm(): void
     {
         $this->reset(['editingId', 'name', 'category', 'icon']);
         $this->resetValidation();

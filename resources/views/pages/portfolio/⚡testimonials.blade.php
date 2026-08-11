@@ -146,7 +146,7 @@ new class extends Component {
         });
     }
 
-    protected function resetForm(): void
+    public function resetForm(): void
     {
         $this->reset(['editingId', 'name', 'role_company', 'quote', 'avatar', 'existingAvatarPath']);
         $this->resetValidation();
@@ -174,7 +174,7 @@ new class extends Component {
             <div class="flex items-center justify-between gap-4 rounded-lg border border-zinc-200 p-4 dark:border-zinc-700">
                 <div class="flex items-center gap-3">
                     @if ($testimonial->avatar_path)
-                        <img src="{{ \Illuminate\Support\Facades\Storage::url($testimonial->avatar_path) }}" alt="{{ $testimonial->name }}" class="h-10 w-10 rounded-full object-cover">
+                        <img src="{{ $testimonial->avatar_url }}" alt="{{ $testimonial->name }}" class="h-10 w-10 rounded-full object-cover">
                     @endif
                     <div>
                         <flux:heading>{{ $testimonial->name }}</flux:heading>
@@ -207,7 +207,7 @@ new class extends Component {
             <div>
                 <flux:input wire:model="avatar" :label="__('Avatar')" type="file" accept="image/*" />
                 @if ($existingAvatarPath)
-                    <img src="{{ \Illuminate\Support\Facades\Storage::url($existingAvatarPath) }}" alt="{{ __('Current avatar') }}" class="mt-2 h-16 w-16 rounded-full object-cover">
+                    <img src="{{ \App\Models\Testimonial::resolveFileUrl($existingAvatarPath) }}" alt="{{ __('Current avatar') }}" class="mt-2 h-16 w-16 rounded-full object-cover">
                 @endif
             </div>
 

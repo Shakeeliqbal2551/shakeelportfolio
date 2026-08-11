@@ -40,6 +40,8 @@ class PortfolioContactController extends Controller
                 'is_repeat_visitor' => $isRepeat ? 1 : 0,
                 'visit_time' => now(),
                 'session_token' => $request->query('session_token') ? (string) $request->query('session_token') : null,
+                'referrer' => $visitor['referrer'],
+                'isp' => $visitor['isp'],
             ]);
 
             return response('logged', 200);
@@ -167,6 +169,8 @@ class PortfolioContactController extends Controller
             'browser' => $this->getBrowserName((string) $request->userAgent()),
             'os' => $this->getOperatingSystem((string) $request->userAgent()),
             'device_type' => $this->getDeviceType((string) $request->userAgent()),
+            'referrer' => $request->header('referer'),
+            'isp' => $location['isp'] ?? null,
         ];
     }
 
@@ -190,6 +194,7 @@ class PortfolioContactController extends Controller
                 'region' => 'Local',
                 'latitude' => '',
                 'longitude' => '',
+                'isp' => 'Local',
             ];
         }
 
@@ -202,6 +207,7 @@ class PortfolioContactController extends Controller
                     'region' => $ipApiCo['region'] ?? 'Unknown',
                     'latitude' => (string) ($ipApiCo['latitude'] ?? ''),
                     'longitude' => (string) ($ipApiCo['longitude'] ?? ''),
+                    'isp' => $ipApiCo['org'] ?? 'Unknown',
                 ];
             }
         } catch (Throwable) {
@@ -216,6 +222,7 @@ class PortfolioContactController extends Controller
                     'region' => $ipApi['regionName'] ?? 'Unknown',
                     'latitude' => (string) ($ipApi['lat'] ?? ''),
                     'longitude' => (string) ($ipApi['lon'] ?? ''),
+                    'isp' => $ipApi['isp'] ?? $ipApi['org'] ?? 'Unknown',
                 ];
             }
         } catch (Throwable) {
@@ -227,6 +234,7 @@ class PortfolioContactController extends Controller
             'region' => 'Unknown',
             'latitude' => '',
             'longitude' => '',
+            'isp' => 'Unknown',
         ];
     }
 

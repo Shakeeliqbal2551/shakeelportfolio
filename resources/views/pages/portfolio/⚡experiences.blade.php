@@ -126,7 +126,7 @@ new class extends Component {
         });
     }
 
-    protected function resetForm(): void
+    public function resetForm(): void
     {
         $this->reset(['editingId', 'company', 'role', 'project_name', 'date_range', 'description']);
         $this->resetValidation();

@@ -22,7 +22,7 @@ Route::get('/blog', [BlogController::class, 'indexDefault'])->name('blog.index')
 Route::get('/portfolio/{portfolio:slug}/blog/{post}', [BlogController::class, 'show'])->name('portfolio.blog.show');
 Route::get('/blog/{post}', [BlogController::class, 'showDefault'])->name('blog.show');
 
-Route::view('dashboard', 'dashboard')
+Route::livewire('dashboard', 'pages::dashboard-home')
     ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
