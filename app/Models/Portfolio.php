@@ -67,6 +67,11 @@ class Portfolio extends Model
         return $this->hasOne(AboutSection::class);
     }
 
+    public function profileImages(): HasMany
+    {
+        return $this->hasMany(ProfileImage::class);
+    }
+
     public function experiences(): HasMany
     {
         return $this->hasMany(Experience::class);

@@ -24,6 +24,9 @@
                     <flux:sidebar.item icon="identification" :href="route('portfolio.about')" :current="request()->routeIs('portfolio.about')" wire:navigate>
                         {{ __('About') }}
                     </flux:sidebar.item>
+                    <flux:sidebar.item icon="photo" :href="route('portfolio.profile-images')" :current="request()->routeIs('portfolio.profile-images')" wire:navigate>
+                        {{ __('Profile Photos') }}
+                    </flux:sidebar.item>
                     <flux:sidebar.item icon="briefcase" :href="route('portfolio.experiences')" :current="request()->routeIs('portfolio.experiences')" wire:navigate>
                         {{ __('Experience') }}
                     </flux:sidebar.item>

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::livewire('dashboard/portfolio/settings', 'pages::portfolio.settings')->name('portfolio.settings');
     Route::livewire('dashboard/portfolio/about', 'pages::portfolio.about')->name('portfolio.about');
+    Route::livewire('dashboard/portfolio/profile-images', 'pages::portfolio.profile-images')->name('portfolio.profile-images');
     Route::livewire('dashboard/portfolio/experiences', 'pages::portfolio.experiences')->name('portfolio.experiences');
     Route::livewire('dashboard/portfolio/educations', 'pages::portfolio.educations')->name('portfolio.educations');
     Route::livewire('dashboard/portfolio/skills', 'pages::portfolio.skills')->name('portfolio.skills');

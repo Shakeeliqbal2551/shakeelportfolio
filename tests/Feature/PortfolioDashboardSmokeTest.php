@@ -65,6 +65,7 @@ class PortfolioDashboardSmokeTest extends TestCase
         foreach ([
             'portfolio.settings',
             'portfolio.about',
+            'portfolio.profile-images',
             'portfolio.experiences',
             'portfolio.educations',
             'portfolio.skills',
@@ -285,6 +286,42 @@ class PortfolioDashboardSmokeTest extends TestCase
 
         Storage::disk('public')->assertMissing($path);
         $this->assertDatabaseMissing('projects', ['id' => $project->id]);
+    }
+
+    public function test_profile_images_dashboard_page_renders(): void
+    {
+        $this->get(route('portfolio.profile-images'))->assertOk();
+    }
+
+    public function test_profile_image_upload_toggle_and_delete(): void
+    {
+        Storage::fake('public');
+
+        $image = UploadedFile::fake()->image('profile.jpg');
+
+        \Livewire\Livewire::test('pages::portfolio.profile-images')
+            ->set('image', $image)
+            ->set('alt_text', 'Gallery photo')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $profileImage = \App\Models\ProfileImage::where('portfolio_id', $this->portfolio->id)->first();
+        $this->assertNotNull($profileImage);
+        $this->assertFalse($profileImage->is_active);
+        Storage::disk('public')->assertExists($profileImage->image_path);
+
+        \Livewire\Livewire::test('pages::portfolio.profile-images')
+            ->call('toggleActive', $profileImage->id);
+
+        $this->assertTrue($profileImage->fresh()->is_active);
+
+        \Livewire\Livewire::test('pages::portfolio.profile-images')
+            ->call('confirmDelete', $profileImage->id)
+            ->call('delete')
+            ->assertHasNoErrors();
+
+        Storage::disk('public')->assertMissing($profileImage->image_path);
+        $this->assertDatabaseMissing('profile_images', ['id' => $profileImage->id]);
     }
 
     public function test_other_user_cannot_access_this_portfolio_data(): void

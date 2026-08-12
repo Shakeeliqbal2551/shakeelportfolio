@@ -154,15 +154,153 @@
         /* Compensate for 64px header — reduce #home top padding by 64px (was 200px) */
         #home { padding-top: 136px; }
         @media (max-width: 1040px) {
+            /* Respect the theme's mobile #home reset (min-height/padding) instead of clobbering it */
+            #home { padding-top: 114px; }
+        }
+
+        /* Mobile burger toggle */
+        .header-burger {
+            display: none;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            width: 40px;
+            height: 40px;
+            padding: 0;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            flex-shrink: 0;
+            z-index: 10001;
+        }
+        .header-burger span {
+            display: block;
+            width: 22px;
+            height: 2px;
+            background: #e6edf3;
+            border-radius: 2px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        .header-burger.is-active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .header-burger.is-active span:nth-child(2) { opacity: 0; }
+        .header-burger.is-active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+        /* Mobile nav overlay */
+        .mobile-nav-overlay {
+            position: fixed;
+            inset: 0;
+            top: 64px;
+            z-index: 9998;
+            background: #0a0e14;
+            background-image: radial-gradient(circle at 85% 0%, rgba(94,234,212,0.10) 0%, transparent 55%);
+            visibility: hidden;
+            opacity: 0;
+            transition: opacity 0.3s ease, visibility 0.3s;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+        }
+        .mobile-nav-overlay.is-open {
+            visibility: visible;
+            opacity: 1;
+        }
+        .mobile-nav {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            padding: 8px 7% 40px;
+        }
+        .mobile-nav ol {
+            list-style: none;
+            margin: 0;
+            padding: 12px 0 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .mobile-nav ol li {
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity 0.4s ease, transform 0.4s ease;
+            transition-delay: calc(var(--i, 0) * 45ms);
+        }
+        .mobile-nav-overlay.is-open ol li {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .mobile-nav ol li a {
+            display: flex;
+            align-items: baseline;
+            gap: 16px;
+            padding: 17px 2px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            color: var(--text-hi, #e6edf3);
+            text-decoration: none;
+            font-family: 'Fraunces', 'Jost', serif;
+            font-size: 24px;
+            font-weight: 500;
+            letter-spacing: -0.01em;
+            transition: color 0.25s ease, padding-left 0.25s ease;
+        }
+        .mobile-nav ol li a .mobile-nav-index {
+            font-family: 'Jost', sans-serif;
+            font-size: 11px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            color: #5eead4;
+            flex-shrink: 0;
+        }
+        .mobile-nav ol li a:hover,
+        .mobile-nav ol li a:active {
+            color: #5eead4;
+            padding-left: 10px;
+        }
+        .mobile-nav-cta {
+            display: flex !important;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 32px;
+            padding: 17px 24px;
+            border-radius: 100px;
+            background: linear-gradient(135deg, #14b8a6 0%, #5eead4 100%);
+            color: #04161a !important;
+            text-decoration: none !important;
+            font-family: 'Jost', sans-serif;
+            font-size: 13.5px;
+            font-weight: 600;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+            box-shadow: 0 14px 32px -12px rgba(94,234,212,0.55);
+            opacity: 0;
+            transform: translateY(14px);
+            transition: opacity 0.4s ease 0.32s, transform 0.4s ease 0.32s, box-shadow 0.25s ease;
+        }
+        .mobile-nav-overlay.is-open .mobile-nav-cta {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        .mobile-nav-cta:active {
+            box-shadow: 0 8px 20px -10px rgba(94,234,212,0.55);
+        }
+        body.mobile-nav-open { overflow: hidden; }
+
+        @media (max-width: 1040px) {
             /* left panel becomes 100vw, container padding is 8% → match header */
             .header-inner { padding: 0 8%; }
         }
         @media (max-width: 900px) {
             .header-nav { display: none; }
+            .header-burger { display: flex; }
+        }
+        @media (min-width: 901px) {
+            .mobile-nav-overlay { display: none !important; }
         }
         @media (max-width: 480px) {
-            .header-cta { display: none; }
-            .header-inner { padding: 0 10px; }
+            .header-cta,
+            .static-header a.glow_button { display: none !important; }
+            .header-inner { padding: 0 10px; gap: 10px; }
+            .mobile-nav-overlay { top: 64px; }
         }
     </style>
 
@@ -270,6 +408,9 @@
 
         /* ============ HERO ============ */
         #home { overflow: hidden; padding-bottom: 60px; }
+        @media (max-width: 1040px) {
+            #home { padding-bottom: 0; min-height: 0; }
+        }
         #home::before, #home::after {
             content: ""; position: absolute; pointer-events: none; z-index: 0;
             border-radius: 50%; filter: blur(80px);
@@ -1133,31 +1274,22 @@
         .resumo_fn_contact_info a.fn__link { color: var(--gold-bright) !important; font-size: 15px !important; letter-spacing: 0 !important; text-transform: none !important; }
 
         /* ============ RIGHT PANEL ============ */
+        /* Original: padding: 100px 16%. +64px top to compensate for the fixed 64px header (right panel is position:fixed, outside .resumo_fn_content which already gets the 64px bump). */
         .resumo_fn_right .right_in {
             background: linear-gradient(180deg, var(--bg-1) 0%, var(--bg-0) 100%) !important;
-            padding: 40px 28px !important;
+            padding: 164px 16% 100px !important;
+        }
+        @media (max-width: 1040px) {
+            .resumo_fn_right .right_in { padding: 164px 20% 100px !important; }
+        }
+        @media (max-width: 768px) {
+            .resumo_fn_right .right_in { padding: 164px 20px 100px !important; }
         }
         .right_top { position: relative; }
-        .right_top .border1, .right_top .border2 { display: none !important; }
         .right_top .img_holder {
             position: relative !important;
-            border-radius: 16px !important;
-            overflow: hidden !important;
-            margin-bottom: 28px !important;
-            box-shadow:
-                0 0 0 1px rgba(255,255,255,0.05),
-                0 20px 60px -20px rgba(0,0,0,0.6);
-        }
-        .right_top .img_holder::after {
-            content: "";
-            position: absolute; inset: 0;
-            border-radius: 16px;
-            box-shadow: inset 0 0 0 1px rgba(94,234,212,0.14);
-            pointer-events: none;
         }
         .right_top .title_holder {
-            position: static !important;
-            padding: 0 !important;
             text-align: center !important;
             background: none !important;
         }
@@ -1180,6 +1312,7 @@
             line-height: 1.2 !important;
             margin: 0 !important;
         }
+        .right_bottom:empty { display: none !important; }
         .right_bottom {
             padding: 32px 0 0 !important;
             margin-top: 32px;
@@ -1273,9 +1406,51 @@
                     <span class="circle"></span>
                     <span class="text">Book a Free Consultation</span>
                 </a>
+                <button type="button" class="header-burger" aria-label="Open menu" aria-expanded="false" aria-controls="mobileNavMenu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </div>
         </header>
         <!-- /Static Header -->
+
+        <!-- Mobile Nav Overlay -->
+        @php
+            $mobileNavLinks = collect([
+                ['href' => '#home', 'label' => 'Home'],
+                ['href' => '#about', 'label' => 'About'],
+                $portfolio->projects->contains(fn ($project) => $project->isVenture())
+                    ? ['href' => '#ventures', 'label' => 'Ventures']
+                    : null,
+                ['href' => '#portfolio', 'label' => 'Portfolio'],
+                ['href' => '#services', 'label' => 'Services'],
+                ['href' => '#customers', 'label' => 'Testimonials'],
+                $portfolio->posts()->published()->exists()
+                    ? ['href' => route('portfolio.blog.index', $portfolio), 'label' => 'Blog']
+                    : null,
+                ['href' => '#contact', 'label' => 'Contact'],
+            ])->filter()->values();
+        @endphp
+        <div class="mobile-nav-overlay" id="mobileNavMenu">
+            <nav class="mobile-nav">
+                <ol>
+                    @foreach ($mobileNavLinks as $link)
+                        <li style="--i: {{ $loop->index }}">
+                            <a href="{{ $link['href'] }}">
+                                <span class="mobile-nav-index">{{ str_pad($loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                <span class="mobile-nav-label">{{ $link['label'] }}</span>
+                            </a>
+                        </li>
+                    @endforeach
+                </ol>
+                <a href="#contact" class="mobile-nav-cta">
+                    <span>Book a Free Consultation</span>
+                    <span aria-hidden="true">&nbsp;→</span>
+                </a>
+            </nav>
+        </div>
+        <!-- /Mobile Nav Overlay -->
 
         <!-- MODALBOX -->
         <div class="resumo_fn_modalbox">
@@ -2034,8 +2209,8 @@
                         <div class="border2"></div>
 
                         @php
-                            $profileImageUrl = $portfolio->about?->profile_image_url ?: asset('img/shakeel1.png');
-                            $profileImageAlt = $portfolio->about?->alt_text ?: trim(($portfolio->user?->name ?: '').($portfolio->hero_subtitle ? ' — '.$portfolio->hero_subtitle : ''));
+                            $profileImageUrl = $randomProfileImage?->image_url ?: ($portfolio->about?->profile_image_url ?: asset('img/shakeel1.png'));
+                            $profileImageAlt = $randomProfileImage?->alt_text ?: ($portfolio->about?->alt_text ?: trim(($portfolio->user?->name ?: '').($portfolio->hero_subtitle ? ' — '.$portfolio->hero_subtitle : '')));
                         @endphp
                         <div class="img_holder">
                             <img src="{{ $profileImageUrl }}" alt="{{ $profileImageAlt }}">
@@ -2144,6 +2319,39 @@
                 sendDuration();
             }
         });
+
+        // Mobile nav toggle
+        const burger = document.querySelector('.header-burger');
+        const mobileNav = document.getElementById('mobileNavMenu');
+        if (burger && mobileNav) {
+            const closeMobileNav = () => {
+                burger.classList.remove('is-active');
+                burger.setAttribute('aria-expanded', 'false');
+                burger.setAttribute('aria-label', 'Open menu');
+                mobileNav.classList.remove('is-open');
+                document.body.classList.remove('mobile-nav-open');
+            };
+            const openMobileNav = () => {
+                burger.classList.add('is-active');
+                burger.setAttribute('aria-expanded', 'true');
+                burger.setAttribute('aria-label', 'Close menu');
+                mobileNav.classList.add('is-open');
+                document.body.classList.add('mobile-nav-open');
+            };
+            burger.addEventListener('click', function () {
+                if (mobileNav.classList.contains('is-open')) {
+                    closeMobileNav();
+                } else {
+                    openMobileNav();
+                }
+            });
+            mobileNav.querySelectorAll('a').forEach(link => {
+                link.addEventListener('click', closeMobileNav);
+            });
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 900) closeMobileNav();
+            });
+        }
 
         // Portfolio: inject arrow button (card descriptions are now rendered server-side)
         const arrowSvg = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="7" y1="17" x2="17" y2="7"/><polyline points="7 7 17 7 17 17"/></svg>';

@@ -6,6 +6,7 @@ use App\Models\AboutSection;
 use App\Models\Experience;
 use App\Models\Portfolio;
 use App\Models\Post;
+use App\Models\ProfileImage;
 use App\Models\Project;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -145,6 +146,58 @@ class PortfolioPublicPageTest extends TestCase
 
         $response->assertOk();
         $response->assertSee('Owner Draft Post');
+    }
+
+    public function test_public_page_shows_one_of_the_active_profile_images_only(): void
+    {
+        $user = User::factory()->create();
+        $portfolio = Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'gallery-tenant',
+            'site_title' => 'Gallery Tenant',
+            'hero_reassurance_items' => ['a'],
+            'hero_stats' => [['label' => 'L1', 'value' => 'V1']],
+        ]);
+
+        ProfileImage::create(['portfolio_id' => $portfolio->id, 'image_path' => 'img/active-one.png', 'is_active' => true, 'sort_order' => 0]);
+        ProfileImage::create(['portfolio_id' => $portfolio->id, 'image_path' => 'img/active-two.png', 'is_active' => true, 'sort_order' => 1]);
+        ProfileImage::create(['portfolio_id' => $portfolio->id, 'image_path' => 'img/inactive.png', 'is_active' => false, 'sort_order' => 2]);
+
+        $response = $this->get(route('portfolio.show', $portfolio->slug));
+
+        $response->assertOk();
+        $response->assertDontSee('inactive.png');
+
+        $body = $response->getContent();
+        $sawActiveOne = str_contains($body, 'active-one.png');
+        $sawActiveTwo = str_contains($body, 'active-two.png');
+
+        $this->assertTrue($sawActiveOne xor $sawActiveTwo);
+    }
+
+    public function test_public_page_falls_back_to_about_profile_image_when_no_active_gallery_images(): void
+    {
+        $user = User::factory()->create();
+        $portfolio = Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'fallback-tenant',
+            'site_title' => 'Fallback Tenant',
+            'hero_reassurance_items' => ['a'],
+            'hero_stats' => [['label' => 'L1', 'value' => 'V1']],
+        ]);
+
+        AboutSection::create([
+            'portfolio_id' => $portfolio->id,
+            'profile_image_path' => 'img/about-fallback.png',
+        ]);
+
+        ProfileImage::create(['portfolio_id' => $portfolio->id, 'image_path' => 'img/inactive.png', 'is_active' => false, 'sort_order' => 0]);
+
+        $response = $this->get(route('portfolio.show', $portfolio->slug));
+
+        $response->assertOk();
+        $response->assertSee('about-fallback.png');
+        $response->assertDontSee('inactive.png');
     }
 
     public function test_venture_role_badge_renders_for_non_client_projects_only(): void
