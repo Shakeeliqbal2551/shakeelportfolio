@@ -1,10 +1,5 @@
 ﻿<!DOCTYPE html>
-<!--[if lt IE 7 ]><html class="ie ie6" lang="en"> <![endif]-->
-<!--[if IE 7 ]><html class="ie ie7" lang="en"> <![endif]-->
-<!--[if IE 8 ]><html class="ie ie8" lang="en"> <![endif]-->
-<!--[if (gte IE 9)|!(IE)]><!-->
 <html lang="en">
-<!--<![endif]-->
 
 <head>
     <meta charset="UTF-8" />
@@ -14,7 +9,7 @@
         $seoTitle = $portfolio->site_title ?: ($portfolio->about?->title ?: 'Portfolio');
         $seoDescription = $portfolio->meta_description ?: ($portfolio->about?->bio ?: '');
         $seoImage = $portfolio->about?->profile_image_url ?: asset('img/shakeel1.png');
-        $canonicalUrl = request()->url();
+        $canonicalUrl = $portfolio->isDefault() ? route('home') : route('portfolio.show', $portfolio);
     @endphp
 
     <title>{{ $seoTitle }}</title>
@@ -1348,9 +1343,6 @@
         }
     </style>
 
-    <!-- Font Awesome -->
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
     <!-- Structured Data with JSON-LD -->
     <script type="application/ld+json">
     {!! json_encode([
@@ -1383,7 +1375,7 @@
             <div class="header-inner">
                 <div class="header-logo">
                     <a href="#home">
-                        <img src="{{ asset('img/logo/logo.png') }}" alt="{{ $portfolio->user?->name }}" />
+                        <img src="{{ asset('img/logo/logo.png') }}" alt="{{ $portfolio->user?->name }}" width="70" height="76" />
                     </a>
                 </div>
                 <nav class="header-nav">
@@ -1478,7 +1470,7 @@
         </div>
         <!-- /MODALBOX -->
 
-        <div class="resumo_fn_content">
+        <main class="resumo_fn_content">
 
             <!-- Main Left Part -->
             <div class="resumo_fn_left">
@@ -1499,9 +1491,9 @@
                                         </span>
                                     @endif
                                     @if ($portfolio->hero_subtitle)
-                                        <h1 class="subtitle">{{ $portfolio->hero_subtitle }}</h1>
+                                        <p class="subtitle">{{ $portfolio->hero_subtitle }}</p>
                                     @endif
-                                    <h2 class="title">
+                                    <h1 class="title">
                                         @if ($portfolio->hero_title_accent && str_contains((string) $portfolio->hero_title, $portfolio->hero_title_accent))
                                             {!! str_replace(
                                                 $portfolio->hero_title_accent,
@@ -1511,7 +1503,7 @@
                                         @else
                                             {{ $portfolio->hero_title }}
                                         @endif
-                                    </h2>
+                                    </h1>
                                     @if ($portfolio->hero_description)
                                         <p class="desc">
                                             {{ $portfolio->hero_description }}
@@ -1651,7 +1643,7 @@
                                                         <li>
                                                             <div class="item">
                                                                 <div class="item_top">
-                                                                    <h5>{{ $experience->company }}</h5>
+                                                                    <p class="company">{{ $experience->company }}</p>
                                                                     <span>({{ $experience->date_range }})</span>
                                                                 </div>
                                                                 <h3>{{ $experience->role }}</h3>
@@ -1677,7 +1669,7 @@
                                                         <li>
                                                             <div class="item">
                                                                 <div class="item_top">
-                                                                    <h5>{{ $education->institution }}</h5>
+                                                                    <p class="company">{{ $education->institution }}</p>
                                                                     <span>({{ $education->date_range }})</span>
                                                                 </div>
                                                                 <h3>{{ $education->degree }}</h3>
@@ -2073,8 +2065,8 @@
                                             <div class="item">
                                                 <div class="title_holder">
                                                     <p class="desc">&ldquo;{{ $testimonial->quote }}&rdquo;</p>
-                                                    <h2 class="title">{{ $testimonial->name }}</h2>
-                                                    <h3 class="subtitle">{{ $testimonial->role_company }}</h3>
+                                                    <p class="title">{{ $testimonial->name }}</p>
+                                                    <p class="subtitle">{{ $testimonial->role_company }}</p>
                                                 </div>
                                             </div>
                                         @endforeach
@@ -2129,25 +2121,25 @@
                                         <div class="items">
                                             <div class="item half">
                                                 <div class="input_wrapper">
-                                                    <input id="name" type="text" />
+                                                    <input id="name" type="text" aria-label="Name" />
                                                     <span class="moving_placeholder">Name *</span>
                                                 </div>
                                             </div>
                                             <div class="item half">
                                                 <div class="input_wrapper">
-                                                    <input id="email" type="email" />
+                                                    <input id="email" type="email" aria-label="Email" />
                                                     <span class="moving_placeholder">Email *</span>
                                                 </div>
                                             </div>
                                             <div class="item">
                                                 <div class="input_wrapper">
-                                                    <input id="phone" type="number" />
+                                                    <input id="phone" type="number" aria-label="Phone" />
                                                     <span class="moving_placeholder">Phone *</span>
                                                 </div>
                                             </div>
                                             <div class="item">
                                                 <div class="input_wrapper">
-                                                    <textarea id="message"></textarea>
+                                                    <textarea id="message" aria-label="Message"></textarea>
                                                     <span class="moving_placeholder">Message *</span>
                                                 </div>
                                             </div>
@@ -2186,7 +2178,7 @@
 
                 <footer id="footer">
                     <div class="footer_top">
-                        <a href="#" class="resumo_fn_totop"><span></span></a>
+                        <a href="#" class="resumo_fn_totop" aria-label="Back to top"><span></span></a>
                     </div>
                     <div class="footer_content">
                         <div class="container">
@@ -2213,11 +2205,11 @@
                             $profileImageAlt = $randomProfileImage?->alt_text ?: ($portfolio->about?->alt_text ?: trim(($portfolio->user?->name ?: '').($portfolio->hero_subtitle ? ' — '.$portfolio->hero_subtitle : '')));
                         @endphp
                         <div class="img_holder">
-                            <img src="{{ $profileImageUrl }}" alt="{{ $profileImageAlt }}">
-                            <div class="abs_img" id="background-img" data-bg-img="{{ $profileImageUrl }}"></div>
+                            <img src="{{ $profileImageUrl }}" alt="{{ $profileImageAlt }}" fetchpriority="high">
+                            <div class="abs_img" id="background-img" data-bg-img="{{ $profileImageUrl }}" style="background-image: url('{{ $profileImageUrl }}');"></div>
                         </div>
                         <div class="title_holder">
-                            <h5>Hi There! I am</h5>
+                            <p class="eyebrow">Hi There! I am</p>
                             <h3>
                                 <span class="animated_title">
                                     <span class="title_in">{{ $portfolio->user?->name }}</span>
@@ -2231,12 +2223,13 @@
                     <div class="right_bottom"></div>
 
 
-                    <link rel="stylesheet"
-                        href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
                     @if ($portfolio->whatsapp_number)
                         <a href="https://api.whatsapp.com/send?phone={{ urlencode($portfolio->whatsapp_number) }}&text=Hello! I would like to inquire about your services."
-                            class="float" target="_blank">
-                            <i class="fa fa-whatsapp my-float"></i>
+                            class="float" target="_blank" aria-label="Chat on WhatsApp">
+                            <svg class="my-float" viewBox="0 0 24 24" width="30" height="30" fill="currentColor" aria-hidden="true">
+                                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/>
+                                <path d="M12.001 2C6.478 2 2 6.477 2 12c0 1.986.579 3.836 1.578 5.396L2 22l4.735-1.552A9.953 9.953 0 0 0 12.001 22c5.523 0 10-4.477 10-10S17.524 2 12.001 2zm0 18.13a8.107 8.107 0 0 1-4.13-1.128l-.296-.176-3.06 1.004 1.02-2.987-.192-.306A8.107 8.107 0 0 1 3.87 12c0-4.484 3.647-8.13 8.131-8.13 4.483 0 8.13 3.646 8.13 8.13 0 4.483-3.647 8.13-8.13 8.13z"/>
+                            </svg>
                         </a>
                     @endif
 
@@ -2248,7 +2241,7 @@
             </div>
             <!-- /Main Right Part -->
 
-        </div>
+        </main>
 
 
 
@@ -2415,8 +2408,6 @@
     <script src="{{ asset('js/typed.js') }}?ver=3"></script>
     <script src="{{ asset('js/owl-carousel.js') }}?ver=3"></script>
     <script src="{{ asset('js/waypoints.js') }}?ver=3"></script>
-    <script src="{{ asset('js/nicescroll.js') }}?ver=3"></script>
-    <!--[if lt IE 10]> <script src="{{ asset('js/ie8.js') }}?ver=3"></script> <![endif]-->
     <script src="{{ asset('js/init.js') }}?ver=3"></script>
     <!-- /Scripts -->
 <script src="{{ asset('js/send-email.js') }}?ver=3"></script>

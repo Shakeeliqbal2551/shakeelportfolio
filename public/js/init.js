@@ -543,20 +543,6 @@
 			var navFooter	= $('.resumo_fn_navigation .nav_footer');
 			rightPanel.css({height: $(window).height()});
 			nav.css({height: navIn.height() - navFooter.outerHeight()});
-			if($().niceScroll){
-				rightPanel.niceScroll({
-					touchbehavior: false,
-					cursorwidth: 0,
-					autohidemode: true,
-					cursorborder: "0px solid #333"
-				});
-				nav.niceScroll({
-					touchbehavior: false,
-					cursorwidth: 0,
-					autohidemode: true,
-					cursorborder: "1px solid #333"
-				});
-			}
 		},
 		
 		

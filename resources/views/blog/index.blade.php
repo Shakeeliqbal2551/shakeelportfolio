@@ -1,8 +1,9 @@
 @php
+    $isDefaultPortfolio = $portfolio->isDefault();
     $seoTitle = 'Blog — '.($portfolio->site_title ?: $portfolio->user?->name);
-    $seoDescription = $portfolio->meta_description ?: 'Articles and write-ups from '.$portfolio->user?->name;
+    $seoDescription = $portfolio->blog_meta_description ?: 'Articles and write-ups from '.$portfolio->user?->name;
     $seoImage = $portfolio->about?->profile_image_url;
-    $canonicalUrl = request()->url();
+    $canonicalUrl = $isDefaultPortfolio ? route('blog.index') : route('portfolio.blog.index', $portfolio);
 @endphp
 
 <x-blog.layout :portfolio="$portfolio" :seoTitle="$seoTitle" :seoDescription="$seoDescription" :seoImage="$seoImage" :canonicalUrl="$canonicalUrl">
@@ -11,7 +12,7 @@
         <p class="blog-hero-sub">Thoughts, write-ups, and lessons from building web apps.</p>
 
         @forelse ($posts as $post)
-            <a href="{{ route('portfolio.blog.show', [$portfolio->slug, $post->slug]) }}" class="post-card">
+            <a href="{{ $isDefaultPortfolio ? route('blog.show', $post->slug) : route('portfolio.blog.show', [$portfolio->slug, $post->slug]) }}" class="post-card">
                 @if ($post->featured_image_url)
                     <img src="{{ $post->featured_image_url }}" alt="{{ $post->title }}" loading="lazy">
                 @endif

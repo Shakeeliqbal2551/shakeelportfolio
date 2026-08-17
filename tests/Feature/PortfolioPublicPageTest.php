@@ -73,6 +73,65 @@ class PortfolioPublicPageTest extends TestCase
         $this->get('/')->assertOk();
     }
 
+    public function test_portfolio_show_redirects_to_root_for_default_portfolio(): void
+    {
+        $user = User::factory()->create();
+
+        Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'shakeel-iqbal-cheema',
+            'site_title' => 'Default Portfolio',
+            'hero_reassurance_items' => ['a'],
+            'hero_stats' => [['label' => 'L1', 'value' => 'V1']],
+        ]);
+
+        $this->get(route('portfolio.show', 'shakeel-iqbal-cheema'))
+            ->assertRedirect(route('home'))
+            ->assertStatus(301);
+    }
+
+    public function test_portfolio_show_does_not_redirect_for_non_default_portfolio(): void
+    {
+        $defaultUser = User::factory()->create();
+        Portfolio::create([
+            'user_id' => $defaultUser->id,
+            'slug' => 'shakeel-iqbal-cheema',
+            'site_title' => 'Default Portfolio',
+        ]);
+
+        $otherUser = User::factory()->create();
+        $otherPortfolio = Portfolio::create([
+            'user_id' => $otherUser->id,
+            'slug' => 'other-tenant',
+            'site_title' => 'Other Tenant',
+            'hero_reassurance_items' => ['a'],
+            'hero_stats' => [['label' => 'L1', 'value' => 'V1']],
+        ]);
+
+        $this->get(route('portfolio.show', $otherPortfolio))->assertOk();
+    }
+
+    public function test_home_page_has_single_h1_matching_hero_title(): void
+    {
+        $user = User::factory()->create();
+
+        Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'shakeel-iqbal-cheema',
+            'site_title' => 'Default Portfolio',
+            'hero_subtitle' => 'Senior Laravel Developer',
+            'hero_title' => 'I build Laravel web apps that make you money',
+            'hero_reassurance_items' => ['a'],
+            'hero_stats' => [['label' => 'L1', 'value' => 'V1']],
+        ]);
+
+        $content = $this->get('/')->getContent();
+
+        $this->assertSame(1, preg_match_all('/<h1[\s>]/', $content));
+        preg_match('/<h1[^>]*>(.*?)<\/h1>/s', $content, $matches);
+        $this->assertStringContainsString('I build Laravel web apps that make you money', $matches[1] ?? '');
+    }
+
     public function test_blog_index_shows_published_posts_but_not_drafts(): void
     {
         $user = User::factory()->create();
@@ -103,6 +162,42 @@ class PortfolioPublicPageTest extends TestCase
         $response->assertOk();
         $response->assertSee('Published Post');
         $response->assertDontSee('Draft Post');
+    }
+
+    public function test_blog_index_redirects_to_short_url_for_default_portfolio(): void
+    {
+        $user = User::factory()->create();
+        Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'shakeel-iqbal-cheema',
+            'site_title' => 'Default Portfolio',
+        ]);
+
+        $this->get(route('portfolio.blog.index', 'shakeel-iqbal-cheema'))
+            ->assertRedirect(route('blog.index'))
+            ->assertStatus(301);
+    }
+
+    public function test_blog_show_redirects_to_short_url_for_default_portfolio(): void
+    {
+        $user = User::factory()->create();
+        $portfolio = Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'shakeel-iqbal-cheema',
+            'site_title' => 'Default Portfolio',
+        ]);
+
+        Post::create([
+            'portfolio_id' => $portfolio->id,
+            'title' => 'Published Post',
+            'slug' => 'published-post',
+            'body' => '<p>Body</p>',
+            'published_at' => now()->subDay(),
+        ]);
+
+        $this->get(route('portfolio.blog.show', ['shakeel-iqbal-cheema', 'published-post']))
+            ->assertRedirect(route('blog.show', 'published-post'))
+            ->assertStatus(301);
     }
 
     public function test_draft_post_404s_for_unauthenticated_visitor(): void

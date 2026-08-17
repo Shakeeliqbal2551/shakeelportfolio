@@ -2,6 +2,7 @@
 
 use App\Enums\ProjectRole;
 use App\Models\Project;
+use App\Services\CompressesUploadedImages;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -102,7 +103,7 @@ new class extends Component {
                 Storage::disk('public')->delete($this->existingImagePath);
             }
 
-            $validated['image_path'] = $this->image->store("portfolios/{$this->portfolioId}/projects", 'public');
+            $validated['image_path'] = CompressesUploadedImages::store($this->image, "portfolios/{$this->portfolioId}/projects");
         }
 
         if ($this->editingId) {

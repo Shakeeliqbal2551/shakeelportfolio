@@ -12,7 +12,7 @@ class PortfolioPage extends Component
 
     public ?ProfileImage $randomProfileImage = null;
 
-    public function mount(?Portfolio $portfolio = null): void
+    public function mount(?Portfolio $portfolio = null)
     {
         $this->portfolio = $portfolio ?? Portfolio::default();
 

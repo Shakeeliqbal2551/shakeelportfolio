@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Post;
+use App\Services\CompressesUploadedImages;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -83,7 +84,7 @@ new class extends Component {
                 Storage::disk('public')->delete($this->existingFeaturedImagePath);
             }
 
-            $validated['featured_image_path'] = $this->featured_image->store("portfolios/{$this->portfolioId}/posts", 'public');
+            $validated['featured_image_path'] = CompressesUploadedImages::store($this->featured_image, "portfolios/{$this->portfolioId}/posts");
         }
 
         if ($this->editingId) {

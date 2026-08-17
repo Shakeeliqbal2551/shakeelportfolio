@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Testimonial;
+use App\Services\CompressesUploadedImages;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -73,7 +74,7 @@ new class extends Component {
                 Storage::disk('public')->delete($this->existingAvatarPath);
             }
 
-            $validated['avatar_path'] = $this->avatar->store("portfolios/{$this->portfolioId}/testimonials", 'public');
+            $validated['avatar_path'] = CompressesUploadedImages::store($this->avatar, "portfolios/{$this->portfolioId}/testimonials");
         }
 
         if ($this->editingId) {

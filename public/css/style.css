@@ -142,6 +142,9 @@ a:focus {
 	position: relative;
 	z-index: 2;
 }
+.resumo_fn_right .img_holder{
+	aspect-ratio: 1 / 1;
+}
 .resumo_fn_right .img_holder img{
 	min-width: 100%;
 	opacity: 0;
@@ -195,7 +198,7 @@ a:focus {
 	text-align: center;
 	padding: 27px 0 20px;
 }
-.resumo_fn_right .title_holder h5{
+.resumo_fn_right .title_holder .eyebrow{
 	margin: 0;
 	padding: 0;
 	font-size: 18px;
@@ -892,7 +895,7 @@ a:focus {
 	display: flex;
 	margin-bottom: 14px;
 }
-.resumo_fn_boxed_list .item_top h5{
+.resumo_fn_boxed_list .item_top .company{
 	margin: 0;
 	padding: 0;
 	font-size: 18px;
@@ -1186,6 +1189,7 @@ a:focus {
 }
 #portfolio .img_holder{
 	width: 100%;
+	aspect-ratio: 3 / 2;
 	overflow: hidden;
 	position: relative;
 }
@@ -2327,7 +2331,7 @@ body.light .resumo_fn_right .right_bottom a{color: #333;}
 body.light .resumo_fn_right .right_bottom a:before{background-color: rgba(0,0,0,0.2)}
 body.light .resumo_fn_right .right_bottom a:hover{color: #000;}
 body.light .resumo_fn_right .right_bottom a:hover:before{background-color: rgba(0,0,0,0.5)}
-body.light .resumo_fn_right .title_holder h5{color: #333;}
+body.light .resumo_fn_right .title_holder .eyebrow{color: #333;}
 body.light .resumo_fn_navigation{background-color: #fff;}
 body.light .resumo_fn_nav_overlay{background-color: #eee;}
 body.light #nav .label{color: #777;}

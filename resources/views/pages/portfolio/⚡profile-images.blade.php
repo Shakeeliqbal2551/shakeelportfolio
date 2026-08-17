@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\ProfileImage;
+use App\Services\CompressesUploadedImages;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
@@ -43,7 +44,7 @@ new class extends Component {
 
         ProfileImage::create([
             'portfolio_id' => $this->portfolioId,
-            'image_path' => $this->image->store("portfolios/{$this->portfolioId}/profile-gallery", 'public'),
+            'image_path' => CompressesUploadedImages::store($this->image, "portfolios/{$this->portfolioId}/profile-gallery"),
             'alt_text' => $validated['alt_text'] ?? null,
             'is_active' => false,
             'sort_order' => $maxOrder === null ? 0 : $maxOrder + 1,

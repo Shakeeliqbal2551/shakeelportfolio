@@ -11,6 +11,7 @@ new class extends Component {
     public string $theme = 'default';
     public string $site_title = '';
     public ?string $meta_description = null;
+    public ?string $blog_meta_description = null;
 
     public ?string $hero_badge_text = null;
     public ?string $hero_subtitle = null;
@@ -50,6 +51,7 @@ new class extends Component {
         $this->theme = $portfolio->theme;
         $this->site_title = $portfolio->site_title;
         $this->meta_description = $portfolio->meta_description;
+        $this->blog_meta_description = $portfolio->blog_meta_description;
 
         $this->hero_badge_text = $portfolio->hero_badge_text;
         $this->hero_subtitle = $portfolio->hero_subtitle;
@@ -84,8 +86,9 @@ new class extends Component {
     {
         $validated = $this->validate([
             'slug' => 'required|string|max:255|alpha_dash|unique:portfolios,slug,'.$this->portfolio->id,
-            'site_title' => 'required|string|max:255',
-            'meta_description' => 'nullable|string',
+            'site_title' => 'required|string|max:60',
+            'meta_description' => 'nullable|string|max:160',
+            'blog_meta_description' => 'nullable|string|max:160',
             'hero_badge_text' => 'nullable|string|max:255',
             'hero_subtitle' => 'nullable|string|max:255',
             'hero_title' => 'nullable|string|max:255',
@@ -126,8 +129,25 @@ new class extends Component {
             <flux:heading size="lg">{{ __('General') }}</flux:heading>
 
             <flux:input wire:model="slug" :label="__('Slug')" type="text" required />
-            <flux:input wire:model="site_title" :label="__('Site Title')" type="text" required />
-            <flux:textarea wire:model="meta_description" :label="__('Meta Description')" rows="3" />
+            <flux:input
+                wire:model.live="site_title"
+                :label="__('Site Title')"
+                :description="__(':count/60 characters — shown as the page title in search results', ['count' => strlen($site_title)])"
+                type="text"
+                required
+            />
+            <flux:textarea
+                wire:model.live="meta_description"
+                :label="__('Meta Description')"
+                :description="__(':count/160 characters — shown as the search result snippet for the homepage', ['count' => strlen((string) $meta_description)])"
+                rows="3"
+            />
+            <flux:textarea
+                wire:model.live="blog_meta_description"
+                :label="__('Blog Meta Description')"
+                :description="__(':count/160 characters — shown as the search result snippet for the blog index. Falls back to a generic line if left blank.', ['count' => strlen((string) $blog_meta_description)])"
+                rows="3"
+            />
 
             <flux:select :label="__('Theme')" disabled>
                 <flux:select.option selected>{{ __('Default') }}</flux:select.option>

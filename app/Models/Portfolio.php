@@ -12,12 +12,15 @@ class Portfolio extends Model
 {
     use HasFactory;
 
+    public const DEFAULT_SLUG = 'shakeel-iqbal-cheema';
+
     protected $fillable = [
         'user_id',
         'slug',
         'theme',
         'site_title',
         'meta_description',
+        'blog_meta_description',
         'hero_badge_text',
         'hero_subtitle',
         'hero_title',
@@ -54,7 +57,12 @@ class Portfolio extends Model
      */
     public static function default(): self
     {
-        return static::where('slug', 'shakeel-iqbal-cheema')->firstOrFail();
+        return static::where('slug', self::DEFAULT_SLUG)->firstOrFail();
+    }
+
+    public function isDefault(): bool
+    {
+        return $this->slug === self::DEFAULT_SLUG;
     }
 
     public function user(): BelongsTo
