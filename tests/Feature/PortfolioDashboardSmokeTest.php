@@ -239,7 +239,7 @@ class PortfolioDashboardSmokeTest extends TestCase
         $this->assertEquals('Years', $this->portfolio->hero_stats[0]['label']);
     }
 
-    public function test_about_resume_and_profile_image_upload_replaces_old_file(): void
+    public function test_about_resume_upload_replaces_old_file(): void
     {
         Storage::fake('public');
 
@@ -249,11 +249,9 @@ class PortfolioDashboardSmokeTest extends TestCase
         \App\Models\AboutSection::where('portfolio_id', $this->portfolio->id)->update(['resume_path' => $oldPath]);
 
         $newResume = UploadedFile::fake()->create('resume.pdf', 10, 'application/pdf');
-        $profileImage = UploadedFile::fake()->image('profile.jpg');
 
         \Livewire\Livewire::test('pages::portfolio.about')
             ->set('resume', $newResume)
-            ->set('profile_image', $profileImage)
             ->call('save')
             ->assertHasNoErrors();
 
@@ -261,7 +259,6 @@ class PortfolioDashboardSmokeTest extends TestCase
 
         $about = \App\Models\AboutSection::where('portfolio_id', $this->portfolio->id)->first();
         Storage::disk('public')->assertExists($about->resume_path);
-        Storage::disk('public')->assertExists($about->profile_image_path);
     }
 
     public function test_project_delete_removes_image_file(): void

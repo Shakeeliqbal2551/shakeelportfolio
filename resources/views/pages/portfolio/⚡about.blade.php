@@ -23,7 +23,6 @@ new class extends Component {
     public ?string $cta_text = null;
 
     public $resume = null;
-    public $profile_image = null;
     public ?string $alt_text = null;
 
     public function mount(): void
@@ -57,7 +56,6 @@ new class extends Component {
             'cta_heading' => 'nullable|string|max:255',
             'cta_text' => 'nullable|string|max:255',
             'resume' => 'nullable|file|mimes:pdf|max:5120',
-            'profile_image' => 'nullable|image|max:2048',
             'alt_text' => 'nullable|string|max:255',
         ]);
 
@@ -70,19 +68,9 @@ new class extends Component {
         }
         unset($validated['resume']);
 
-        if ($this->profile_image) {
-            if ($this->about->profile_image_path) {
-                Storage::disk('public')->delete($this->about->profile_image_path);
-            }
-
-            $validated['profile_image_path'] = $this->profile_image->store("portfolios/{$this->portfolioId}/profile", 'public');
-        }
-        unset($validated['profile_image']);
-
         $this->about->update($validated);
 
         $this->resume = null;
-        $this->profile_image = null;
 
         $this->dispatch('about-updated');
     }
@@ -90,7 +78,7 @@ new class extends Component {
 
 <section class="w-full">
     <flux:heading size="xl">{{ __('About') }}</flux:heading>
-    <flux:subheading>{{ __('Manage your about section, info cards, resume, and profile photo') }}</flux:subheading>
+    <flux:subheading>{{ __('Manage your about section, info cards, and resume') }}</flux:subheading>
 
     <form wire:submit="save" class="my-6 w-full max-w-3xl space-y-10">
         <div class="space-y-6">
@@ -140,14 +128,7 @@ new class extends Component {
                 @endif
             </div>
 
-            <div>
-                <flux:input wire:model="profile_image" :label="__('Profile Image')" type="file" accept="image/*" />
-                @if ($about->profile_image_path)
-                    <img src="{{ $about->profile_image_url }}" alt="{{ __('Profile image') }}" class="mt-2 h-24 w-24 rounded-full object-cover">
-                @endif
-            </div>
-
-            <flux:input wire:model="alt_text" :label="__('Image Alt Text (for SEO)')" type="text" placeholder="{{ __('e.g. Jane Doe — Senior Laravel Developer') }}" description="{{ __('Optional — describe the photo for search engines and screen readers. Falls back to your name and subtitle if left blank.') }}" />
+            <flux:input wire:model="alt_text" :label="__('Image Alt Text (for SEO)')" type="text" placeholder="{{ __('e.g. Jane Doe — Senior Laravel Developer') }}" description="{{ __('Optional — describe your profile photo for search engines and screen readers. Falls back to your name and subtitle if left blank. Manage the photo itself under Profile Photos.') }}" />
         </div>
 
         <div class="flex items-center gap-4">
