@@ -14,7 +14,9 @@ class PortfolioPage extends Component
 
     public function mount(?Portfolio $portfolio = null)
     {
-        $this->portfolio = $portfolio ?? Portfolio::default();
+        $this->portfolio = $portfolio
+            ?? request()->attributes->get('resolvedPortfolio')
+            ?? Portfolio::default();
 
         $this->portfolio->load([
             'about',

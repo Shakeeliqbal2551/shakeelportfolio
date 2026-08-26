@@ -14,6 +14,13 @@ class EnforceCanonicalHost
             return $next($request);
         }
 
+        // Requests already resolved to a verified tenant domain (see
+        // ResolveTenantDomain, which runs first) are canonical as-is —
+        // only the platform's own host(s) get scheme/host enforcement.
+        if (! in_array($request->getHost(), config('portfolio.platform_hosts'), true)) {
+            return $next($request);
+        }
+
         $canonical = parse_url((string) config('app.url'));
         $canonicalScheme = $canonical['scheme'] ?? null;
         $canonicalHost = $canonical['host'] ?? null;

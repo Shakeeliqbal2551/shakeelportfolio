@@ -36,3 +36,4 @@ Route::livewire('dashboard', 'pages::dashboard-home')
 
 require __DIR__.'/settings.php';
 require __DIR__.'/portfolio-dashboard.php';
+require __DIR__.'/admin.php';

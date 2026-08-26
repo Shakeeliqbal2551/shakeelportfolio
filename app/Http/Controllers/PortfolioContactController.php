@@ -179,6 +179,7 @@ class PortfolioContactController extends Controller
         $forwarded = $request->server('HTTP_X_FORWARDED_FOR');
         if (is_string($forwarded) && $forwarded !== '') {
             $parts = explode(',', $forwarded);
+
             return trim($parts[0]);
         }
 
@@ -200,7 +201,7 @@ class PortfolioContactController extends Controller
 
         try {
             $ipApiCo = Http::timeout(5)->get("https://ipapi.co/{$ip}/json/")->json();
-            if (is_array($ipApiCo) && !empty($ipApiCo['city'])) {
+            if (is_array($ipApiCo) && ! empty($ipApiCo['city'])) {
                 return [
                     'country' => $ipApiCo['country_name'] ?? 'Unknown',
                     'city' => $ipApiCo['city'] ?? 'Unknown',

@@ -37,6 +37,10 @@ class PortfolioSeeder extends Seeder
             $this->command?->info('Created seed user contact@shakeeliqbal.com with password "password".');
         }
 
+        if (! $user->is_admin) {
+            $user->forceFill(['is_admin' => true])->save();
+        }
+
         $portfolio = Portfolio::updateOrCreate(
             ['user_id' => $user->id],
             [
@@ -423,28 +427,28 @@ class PortfolioSeeder extends Seeder
                 'title' => '5 Laravel Performance Tips I Use in Production',
                 'excerpt' => 'A handful of small, practical changes that consistently pay off in real Laravel apps — from eager loading to queueing slow work.',
                 'body' => "<p>Performance work in Laravel rarely comes down to one big trick. It's usually a handful of small, boring changes applied consistently across a codebase. Here are five I reach for on almost every production project.</p>"
-                    ."<h3>1. Eager load your relationships</h3>"
+                    .'<h3>1. Eager load your relationships</h3>'
                     ."<p>The N+1 query problem is still the most common performance issue I see in Laravel apps. If you're looping over a collection and touching a relationship inside the loop, you almost certainly want <code>with()</code> or <code>load()</code> instead.</p>"
-                    ."<h3>2. Cache expensive, rarely-changing queries</h3>"
-                    ."<p>Not everything needs to hit the database on every request. Dashboard stats, navigation menus, and settings are good candidates for a short-lived cache.</p>"
-                    ."<h3>3. Push slow work onto queues</h3>"
+                    .'<h3>2. Cache expensive, rarely-changing queries</h3>'
+                    .'<p>Not everything needs to hit the database on every request. Dashboard stats, navigation menus, and settings are good candidates for a short-lived cache.</p>'
+                    .'<h3>3. Push slow work onto queues</h3>'
                     ."<p>Sending email, generating PDFs, calling third-party APIs — none of that needs to block the response. Laravel's queue system makes it easy to defer this work.</p>"
-                    ."<h3>Other habits worth building</h3>"
-                    ."<ul><li>Add database indexes for columns you filter or sort by</li><li>Use chunked queries when processing large tables</li><li>Profile with Laravel Debugbar or Telescope before optimizing blindly</li></ul>"
+                    .'<h3>Other habits worth building</h3>'
+                    .'<ul><li>Add database indexes for columns you filter or sort by</li><li>Use chunked queries when processing large tables</li><li>Profile with Laravel Debugbar or Telescope before optimizing blindly</li></ul>'
                     ."<p>None of this is exotic. It's mostly discipline — but that discipline is what keeps an app fast as it grows.</p>",
                 'published_at' => now()->subWeeks(3),
             ],
             [
                 'title' => 'Why I Moved From CodeIgniter to Laravel',
                 'excerpt' => 'CodeIgniter taught me the fundamentals of MVC. Laravel is where I learned to build software that scales — for the codebase and the team.',
-                'body' => "<p>I started my career building on CodeIgniter. It was simple, fast to learn, and got the job done for small projects. But as the projects I worked on grew larger and the teams around me grew bigger, the cracks started to show.</p>"
-                    ."<h2>What CodeIgniter got right</h2>"
+                'body' => '<p>I started my career building on CodeIgniter. It was simple, fast to learn, and got the job done for small projects. But as the projects I worked on grew larger and the teams around me grew bigger, the cracks started to show.</p>'
+                    .'<h2>What CodeIgniter got right</h2>'
                     ."<p>CodeIgniter taught me the fundamentals: routing, MVC separation, working directly with a query builder. There's real value in understanding those building blocks without a framework doing everything for you.</p>"
-                    ."<h2>Where it started to hurt</h2>"
-                    ."<p>No built-in ORM worth relying on, weak testing support, and a much smaller ecosystem meant I was writing — and maintaining — a lot of boilerplate by hand. Authentication, queues, and background jobs were all things I had to bolt on myself.</p>"
-                    ."<h2>What Laravel changed for me</h2>"
+                    .'<h2>Where it started to hurt</h2>'
+                    .'<p>No built-in ORM worth relying on, weak testing support, and a much smaller ecosystem meant I was writing — and maintaining — a lot of boilerplate by hand. Authentication, queues, and background jobs were all things I had to bolt on myself.</p>'
+                    .'<h2>What Laravel changed for me</h2>'
                     ."<p>Eloquent, migrations, queues, a real testing story, and a package ecosystem that covers almost anything you'd need. More importantly, Laravel's conventions make it easier for a team to work on the same codebase without stepping on each other.</p>"
-                    ."<ul><li>Faster to ship features without reinventing infrastructure</li><li>Easier onboarding for new developers who already know the conventions</li><li>A much bigger hiring pool of Laravel-familiar developers</li></ul>"
+                    .'<ul><li>Faster to ship features without reinventing infrastructure</li><li>Easier onboarding for new developers who already know the conventions</li><li>A much bigger hiring pool of Laravel-familiar developers</li></ul>'
                     ."<p>I still have a soft spot for CodeIgniter — it's where I learned the basics. But for anything I build today, Laravel is the obvious choice.</p>",
                 'published_at' => now()->subMonths(2),
             ],
@@ -452,11 +456,11 @@ class PortfolioSeeder extends Seeder
                 'title' => 'Building Multi-Tenant SaaS with Laravel: Lessons Learned',
                 'excerpt' => 'Notes on the tradeoffs between single-database and database-per-tenant architectures, and what actually mattered in practice.',
                 'body' => "<p>This one is still a work in progress, but I wanted to get some early notes down while they're fresh.</p>"
-                    ."<h3>Single database vs. database-per-tenant</h3>"
+                    .'<h3>Single database vs. database-per-tenant</h3>'
                     ."<p>Most of my multi-tenant Laravel projects have used a single database with a <code>tenant_id</code> (or similar) foreign key on every table, scoped through global query scopes. It's simpler to operate, easier to run cross-tenant reporting on, and cheaper to host.</p>"
-                    ."<p>Database-per-tenant gives you stronger isolation and makes per-tenant backups/restores trivial, but migrations, connection management, and local development all get noticeably more complex.</p>"
-                    ."<h3>What actually mattered</h3>"
-                    ."<ul><li>Scoping every query correctly — a missed global scope is a real security risk</li><li>Designing the billing and plan-limit logic early, not bolted on later</li><li>Keeping seed/demo data realistic so bugs show up before customers hit them</li></ul>"
+                    .'<p>Database-per-tenant gives you stronger isolation and makes per-tenant backups/restores trivial, but migrations, connection management, and local development all get noticeably more complex.</p>'
+                    .'<h3>What actually mattered</h3>'
+                    .'<ul><li>Scoping every query correctly — a missed global scope is a real security risk</li><li>Designing the billing and plan-limit logic early, not bolted on later</li><li>Keeping seed/demo data realistic so bugs show up before customers hit them</li></ul>'
                     ."<p>More to come once this ships — this post will get an update once I've had it in production for a few months.</p>",
                 'published_at' => null,
             ],

@@ -52,6 +52,14 @@
                         {{ __('Visitors') }}
                     </flux:sidebar.item>
                 </flux:sidebar.group>
+
+                @if (auth()->user()->isAdmin())
+                    <flux:sidebar.group :heading="__('Admin')" class="grid">
+                        <flux:sidebar.item icon="users" :href="route('admin.tenants')" :current="request()->routeIs('admin.tenants*')" wire:navigate>
+                            {{ __('Tenants') }}
+                        </flux:sidebar.item>
+                    </flux:sidebar.group>
+                @endif
             </flux:sidebar.nav>
 
             <flux:spacer />

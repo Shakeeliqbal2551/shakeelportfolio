@@ -39,6 +39,13 @@ class User extends Authenticatable
     ];
 
     /**
+     * @var array<string, mixed>
+     */
+    protected $attributes = [
+        'is_admin' => false,
+    ];
+
+    /**
      * Get the attributes that should be cast.
      *
      * @return array<string, string>
@@ -48,7 +55,18 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
+            'is_admin' => 'boolean',
         ];
+    }
+
+    /**
+     * Whether this user can access the platform's super-admin panel.
+     * Deliberately not mass-assignable (see $fillable) — only ever set
+     * via forceFill(), a seeder, or a dedicated admin action.
+     */
+    public function isAdmin(): bool
+    {
+        return $this->is_admin;
     }
 
     /**

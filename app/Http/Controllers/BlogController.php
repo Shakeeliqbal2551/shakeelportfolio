@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Portfolio;
 use App\Models\Post;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 class BlogController extends Controller
@@ -15,9 +16,9 @@ class BlogController extends Controller
         return view('blog.index', ['portfolio' => $portfolio, 'posts' => $posts]);
     }
 
-    public function indexDefault(): View
+    public function indexDefault(Request $request): View
     {
-        return $this->index(Portfolio::default());
+        return $this->index($this->resolvedPortfolio($request));
     }
 
     public function show(Portfolio $portfolio, string $post): View
@@ -29,9 +30,14 @@ class BlogController extends Controller
         return view('blog.show', ['portfolio' => $portfolio, 'post' => $post]);
     }
 
-    public function showDefault(string $post): View
+    public function showDefault(Request $request, string $post): View
     {
-        return $this->show(Portfolio::default(), $post);
+        return $this->show($this->resolvedPortfolio($request), $post);
+    }
+
+    private function resolvedPortfolio(Request $request): Portfolio
+    {
+        return $request->attributes->get('resolvedPortfolio') ?? Portfolio::default();
     }
 
     private function authorizePostView(Portfolio $portfolio, Post $post): void

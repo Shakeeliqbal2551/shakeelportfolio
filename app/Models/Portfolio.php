@@ -80,6 +80,11 @@ class Portfolio extends Model
         return $this->hasMany(ProfileImage::class);
     }
 
+    public function domains(): HasMany
+    {
+        return $this->hasMany(Domain::class);
+    }
+
     public function experiences(): HasMany
     {
         return $this->hasMany(Experience::class);

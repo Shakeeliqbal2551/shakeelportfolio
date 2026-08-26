@@ -2,6 +2,8 @@
 
 use App\Http\Middleware\AddSecurityHeaders;
 use App\Http\Middleware\EnforceCanonicalHost;
+use App\Http\Middleware\EnsureUserIsAdmin;
+use App\Http\Middleware\ResolveTenantDomain;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -19,11 +21,16 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
 
         $middleware->web(prepend: [
+            ResolveTenantDomain::class,
             EnforceCanonicalHost::class,
         ]);
 
         $middleware->web(append: [
             AddSecurityHeaders::class,
+        ]);
+
+        $middleware->alias([
+            'admin' => EnsureUserIsAdmin::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

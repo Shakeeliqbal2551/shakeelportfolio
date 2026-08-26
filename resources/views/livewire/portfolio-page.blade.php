@@ -9,7 +9,11 @@
         $seoTitle = $portfolio->site_title ?: ($portfolio->about?->title ?: 'Portfolio');
         $seoDescription = $portfolio->meta_description ?: ($portfolio->about?->bio ?: '');
         $seoImage = $portfolio->about?->profile_image_url ?: asset('img/shakeel1.png');
-        $canonicalUrl = $portfolio->isDefault() ? route('home') : route('portfolio.show', $portfolio);
+        // On a verified tenant custom domain the portfolio is served at "/"
+        // regardless of slug, so the canonical URL should be the domain root.
+        $canonicalUrl = ($portfolio->isDefault() || request()->attributes->has('resolvedPortfolio'))
+            ? url('/')
+            : route('portfolio.show', $portfolio);
     @endphp
 
     <title>{{ $seoTitle }}</title>
