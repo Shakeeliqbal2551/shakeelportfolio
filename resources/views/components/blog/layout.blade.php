@@ -17,12 +17,32 @@
     @endif
     <meta property="og:url" content="{{ $canonicalUrl }}" />
     <meta property="og:type" content="{{ $ogType ?? 'website' }}" />
+    <meta property="og:site_name" content="{{ $portfolio->user?->name ?: $portfolio->site_title }}" />
+    @if (($ogType ?? null) === 'article')
+        @isset($publishedTime)
+            <meta property="article:published_time" content="{{ $publishedTime }}" />
+        @endisset
+        @if ($portfolio->user?->name)
+            <meta property="article:author" content="{{ $portfolio->user->name }}" />
+        @endif
+    @endif
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ $seoTitle }}" />
     <meta name="twitter:description" content="{{ $seoDescription }}" />
+    @if ($seoImage ?? null)
+        <meta name="twitter:image" content="{{ $seoImage }}" />
+    @endif
+
+    <link rel="llms.txt" href="{{ route('llms-txt') }}" />
 
     <link rel="shortcut icon" href="{{ asset('img/logo/slogo.png') }}" type="image/png" />
+
+    @isset($jsonLd)
+        @foreach ((array) $jsonLd as $schema)
+            <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_SLASHES) !!}</script>
+        @endforeach
+    @endisset
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -147,18 +167,23 @@
         }
     </style>
 </head>
+@php
+    $isDefaultPortfolio = $portfolio->isDefault() || request()->attributes->has('resolvedPortfolio');
+    $homeUrl = $isDefaultPortfolio ? url('/') : route('portfolio.show', $portfolio);
+    $blogIndexUrl = $isDefaultPortfolio ? route('blog.index') : route('portfolio.blog.index', $portfolio);
+@endphp
 <body>
     <header class="static-header">
         <div class="header-inner">
             <div class="header-logo">
-                <a href="{{ route('portfolio.show', $portfolio->slug) }}">
+                <a href="{{ $homeUrl }}">
                     <img src="{{ asset('img/logo/logo.png') }}" alt="{{ $portfolio->user?->name }}" />
                 </a>
             </div>
             <nav class="header-nav">
                 <ul>
-                    <li><a href="{{ route('portfolio.show', $portfolio->slug) }}">Home</a></li>
-                    <li><a href="{{ route('portfolio.blog.index', $portfolio->slug) }}" class="active">Blog</a></li>
+                    <li><a href="{{ $homeUrl }}">Home</a></li>
+                    <li><a href="{{ $blogIndexUrl }}" class="active">Blog</a></li>
                 </ul>
             </nav>
         </div>

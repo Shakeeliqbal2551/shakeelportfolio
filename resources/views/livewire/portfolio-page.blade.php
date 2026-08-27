@@ -9,6 +9,10 @@
         $seoTitle = $portfolio->site_title ?: ($portfolio->about?->title ?: 'Portfolio');
         $seoDescription = $portfolio->meta_description ?: ($portfolio->about?->bio ?: '');
         $seoImage = $portfolio->about?->profile_image_url ?: asset('img/shakeel1.png');
+        // Dedicated 1200x630 (1.91:1) share image — social scrapers crop
+        // square/portrait photos awkwardly, so og:image/twitter:image use
+        // this instead of the raw profile photo used for JSON-LD/Person.
+        $ogImage = asset('img/og-default.jpg');
         // On a verified tenant custom domain the portfolio is served at "/"
         // regardless of slug, so the canonical URL should be the domain root.
         $canonicalUrl = ($portfolio->isDefault() || request()->attributes->has('resolvedPortfolio'))
@@ -30,15 +34,25 @@
     <!-- Open Graph for Social Media -->
     <meta property="og:title" content="{{ $seoTitle }}" />
     <meta property="og:description" content="{{ $seoDescription }}" />
-    <meta property="og:image" content="{{ $seoImage }}" />
+    <meta property="og:image" content="{{ $ogImage }}" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:type" content="image/jpeg" />
     <meta property="og:url" content="{{ $canonicalUrl }}" />
-    <meta property="og:type" content="website" />
+    <meta property="og:type" content="profile" />
+    <meta property="og:site_name" content="{{ $portfolio->user?->name ?: $seoTitle }}" />
+    @if ($portfolio->user?->name)
+        <meta property="profile:first_name" content="{{ explode(' ', $portfolio->user->name)[0] }}" />
+    @endif
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="{{ $seoTitle }}" />
     <meta name="twitter:description" content="{{ $seoDescription }}" />
-    <meta name="twitter:image" content="{{ $seoImage }}" />
+    <meta name="twitter:image" content="{{ $ogImage }}" />
+
+    <!-- llms.txt (AI crawler discovery) -->
+    <link rel="llms.txt" href="{{ route('llms-txt') }}" />
 
     <!-- Favicon -->
     <link rel="shortcut icon" href="{{ asset('img/logo/slogo.png') }}" type="image/png" />
@@ -1348,20 +1362,30 @@
     </style>
 
     <!-- Structured Data with JSON-LD -->
-    <script type="application/ld+json">
-    {!! json_encode([
-        '@context' => 'https://schema.org',
-        '@type' => 'Person',
-        'name' => $portfolio->user?->name,
-        'url' => $canonicalUrl,
-        'image' => $seoImage,
-        'jobTitle' => $portfolio->hero_subtitle,
-        'sameAs' => array_values(array_filter([
-            $portfolio->contact_email ? 'mailto:'.$portfolio->contact_email : null,
-        ])),
-        'description' => $seoDescription,
-    ], JSON_UNESCAPED_SLASHES) !!}
-    </script>
+    @php
+        $personSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'Person',
+            'name' => $portfolio->user?->name,
+            'url' => $canonicalUrl,
+            'image' => $seoImage,
+            'jobTitle' => $portfolio->hero_subtitle,
+            'sameAs' => array_values(array_filter([
+                $portfolio->contact_email ? 'mailto:'.$portfolio->contact_email : null,
+            ])),
+            'description' => $seoDescription,
+        ];
+
+        $websiteSchema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'WebSite',
+            'name' => $seoTitle,
+            'url' => $canonicalUrl,
+            'inLanguage' => 'en',
+        ];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($personSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+    <script type="application/ld+json">{!! json_encode($websiteSchema, JSON_UNESCAPED_SLASHES) !!}</script>
 </head>
 
 <body>
