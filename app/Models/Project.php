@@ -7,6 +7,7 @@ use App\Models\Concerns\HasResolvableFileUrl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Project extends Model
 {
@@ -15,6 +16,7 @@ class Project extends Model
     protected $fillable = [
         'portfolio_id',
         'title',
+        'slug',
         'description',
         'details',
         'image_path',
@@ -37,6 +39,31 @@ class Project extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::creating(function (Project $project) {
+            if ($project->slug) {
+                return;
+            }
+
+            $base = Str::slug($project->title);
+            $slug = $base;
+            $suffix = 2;
+
+            while (static::where('portfolio_id', $project->portfolio_id)->where('slug', $slug)->exists()) {
+                $slug = $base.'-'.$suffix;
+                $suffix++;
+            }
+
+            $project->slug = $slug;
+        });
+    }
+
+    public function getRouteKeyName(): string
+    {
+        return 'slug';
+    }
+
     public function portfolio(): BelongsTo
     {
         return $this->belongsTo(Portfolio::class);
@@ -50,6 +77,69 @@ class Project extends Model
     public function isVenture(): bool
     {
         return $this->role !== ProjectRole::Client;
+    }
+
+    /**
+     * Human-readable label built from tags (e.g. "SaaS & Healthcare") for
+     * use in case-study page titles/headings — keeps the SEO title tied to
+     * how the project is actually categorized rather than duplicating it.
+     */
+    public function getCategoryLabelAttribute(): ?string
+    {
+        $tags = collect($this->tags ?? [])->map(fn ($tag) => match ($tag) {
+            'saas' => 'SaaS',
+            'ecommerce' => 'eCommerce',
+            default => ucfirst($tag),
+        });
+
+        return $tags->isEmpty() ? null : $tags->join(' & ');
+    }
+
+    /**
+     * SEO title for the dedicated case-study page. Prefers a "management
+     * system" / "platform" framing pulled from the project's own description
+     * when it already uses that language (most seeded projects do), since
+     * that phrasing is what buyers actually search for — falling back to a
+     * tag-based category label otherwise.
+     */
+    public function getSeoTitleAttribute(): string
+    {
+        $subject = $this->descriptionSubject();
+
+        return $subject
+            ? "{$this->title} — {$subject} Development Case Study"
+            : "{$this->title} — Case Study";
+    }
+
+    /**
+     * Pulls a short, keyword-relevant subject phrase (e.g. "HR Management
+     * System", "Multi-Vendor eCommerce Marketplace") out of the project's
+     * description, falling back to the tag-based category label.
+     */
+    private function descriptionSubject(): ?string
+    {
+        $patterns = [
+            '/\b((?:[A-Za-z-]+\s){0,3}management system)\b/i',
+            '/\b((?:[A-Za-z-]+\s){0,3}management platform)\b/i',
+            '/\b((?:[A-Za-z-]+\s){0,3}marketplace)\b/i',
+            '/\b((?:[A-Za-z-]+\s){0,3}platform)\b/i',
+            '/\b((?:[A-Za-z-]+\s){0,3}system)\b/i',
+        ];
+
+        foreach ($patterns as $pattern) {
+            if (preg_match($pattern, (string) $this->description, $matches)) {
+                $phrase = ucwords(trim($matches[1]));
+
+                return preg_replace('/\bE[Cc]ommerce\b/', 'eCommerce', $phrase);
+            }
+        }
+
+        return $this->category_label;
+    }
+
+    public function getSeoDescriptionAttribute(): string
+    {
+        return Str::limit($this->description, 155, '');
     }
 
     /**

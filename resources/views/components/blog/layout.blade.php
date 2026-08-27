@@ -158,6 +158,15 @@
         .back-link { display: inline-block; margin-bottom: 24px; color: var(--text-muted); text-decoration: none; font-size: 13px; }
         .back-link:hover { color: var(--gold); }
 
+        .case-tags { display: flex; gap: 8px; flex-wrap: wrap; margin: 16px 0 28px; }
+        .case-tag { font-size: 11px; letter-spacing: 1px; text-transform: uppercase; color: var(--gold); border: 1px solid var(--border-hi); border-radius: 999px; padding: 5px 14px; }
+        .case-visit-cta { display: inline-block; margin-top: 32px; padding: 13px 28px; border-radius: 999px; background: linear-gradient(135deg, var(--gold), var(--gold-deep)); color: var(--cta-ink); text-decoration: none; font-weight: 600; font-size: 14px; }
+        .case-visit-cta:hover { opacity: 0.9; }
+        .case-cta-box { margin-top: 56px; padding: 32px; border: 1px solid var(--border); border-radius: 18px; background: var(--surface); text-align: center; }
+        .case-cta-box h3 { margin-bottom: 10px; }
+        .case-cta-box p { margin: 0 0 20px; color: var(--text-muted); }
+        .case-cta-box a { display: inline-block; padding: 13px 28px; border-radius: 999px; background: linear-gradient(135deg, var(--gold), var(--gold-deep)); color: var(--cta-ink); text-decoration: none; font-weight: 600; font-size: 14px; }
+
         footer.blog-footer {
             border-top: 1px solid var(--border);
             padding: 32px 24px;
@@ -171,6 +180,7 @@
     $isDefaultPortfolio = $portfolio->isDefault() || request()->attributes->has('resolvedPortfolio');
     $homeUrl = $isDefaultPortfolio ? url('/') : route('portfolio.show', $portfolio);
     $blogIndexUrl = $isDefaultPortfolio ? route('blog.index') : route('portfolio.blog.index', $portfolio);
+    $activeNav = $activeNav ?? 'blog';
 @endphp
 <body>
     <header class="static-header">
@@ -183,7 +193,8 @@
             <nav class="header-nav">
                 <ul>
                     <li><a href="{{ $homeUrl }}">Home</a></li>
-                    <li><a href="{{ $blogIndexUrl }}" class="active">Blog</a></li>
+                    <li><a href="{{ $homeUrl }}#portfolio" class="{{ $activeNav === 'work' ? 'active' : '' }}">Work</a></li>
+                    <li><a href="{{ $blogIndexUrl }}" class="{{ $activeNav === 'blog' ? 'active' : '' }}">Blog</a></li>
                 </ul>
             </nav>
         </div>

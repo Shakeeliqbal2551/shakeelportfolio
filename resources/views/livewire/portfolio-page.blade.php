@@ -8,14 +8,15 @@
     @php
         $seoTitle = $portfolio->site_title ?: ($portfolio->about?->title ?: 'Portfolio');
         $seoDescription = $portfolio->meta_description ?: ($portfolio->about?->bio ?: '');
-        $seoImage = $portfolio->about?->profile_image_url ?: asset('img/shakeel1.png');
+        $seoImage = $portfolio->about?->profile_image_url ?: asset('img/shakeel1.webp');
         // Dedicated 1200x630 (1.91:1) share image — social scrapers crop
         // square/portrait photos awkwardly, so og:image/twitter:image use
         // this instead of the raw profile photo used for JSON-LD/Person.
         $ogImage = asset('img/og-default.jpg');
         // On a verified tenant custom domain the portfolio is served at "/"
         // regardless of slug, so the canonical URL should be the domain root.
-        $canonicalUrl = ($portfolio->isDefault() || request()->attributes->has('resolvedPortfolio'))
+        $isDefaultPortfolioForNav = $portfolio->isDefault() || request()->attributes->has('resolvedPortfolio');
+        $canonicalUrl = $isDefaultPortfolioForNav
             ? url('/')
             : route('portfolio.show', $portfolio);
     @endphp
@@ -1363,6 +1364,10 @@
 
     <!-- Structured Data with JSON-LD -->
     @php
+        // Deliberately no Review/AggregateRating markup: testimonials here
+        // are curated text quotes with no genuine star-rating mechanism
+        // behind them, and Google's structured-data policy treats that as
+        // manipulative — a manual action would hurt ranking, not help it.
         $personSchema = [
             '@context' => 'https://schema.org',
             '@type' => 'Person',
@@ -1383,9 +1388,25 @@
             'url' => $canonicalUrl,
             'inLanguage' => 'en',
         ];
+
+        $serviceSchemas = $portfolio->services->map(fn ($service) => [
+            '@context' => 'https://schema.org',
+            '@type' => 'Service',
+            'name' => $service->title,
+            'description' => $service->description,
+            'provider' => [
+                '@type' => 'Person',
+                'name' => $portfolio->user?->name,
+            ],
+            'areaServed' => 'Worldwide',
+            'serviceType' => $service->title,
+        ])->values()->all();
     @endphp
     <script type="application/ld+json">{!! json_encode($personSchema, JSON_UNESCAPED_SLASHES) !!}</script>
     <script type="application/ld+json">{!! json_encode($websiteSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+    @foreach ($serviceSchemas as $serviceSchema)
+        <script type="application/ld+json">{!! json_encode($serviceSchema, JSON_UNESCAPED_SLASHES) !!}</script>
+    @endforeach
 </head>
 
 <body>
@@ -1973,6 +1994,9 @@
                                             $imageUrl = $project->image_url ?: asset('img/thumb/square.jpg');
                                             $imageAlt = $project->image_alt ?: ($project->title.' — screenshot');
                                             $primaryTag = $project->tags[0] ?? null;
+                                            $caseStudyUrl = $isDefaultPortfolioForNav
+                                                ? route('work.show', $project->slug)
+                                                : route('portfolio.work.show', [$portfolio, $project->slug]);
                                         @endphp
                                         <div class="item modal_item" data-index="{{ $loop->iteration }}" data-category="{{ $categoryAttr }}">
                                             <div class="img_holder">
@@ -1981,15 +2005,12 @@
                                             </div>
                                             <div class="title_holder">
                                                 <h3>
-                                                    @if ($project->external_link)
-                                                        <a rel="nofollow" target="_blank" href="{{ $project->external_link }}">{{ $project->title }}</a>
-                                                    @else
-                                                        {{ $project->title }}
-                                                    @endif
+                                                    <a href="{{ $caseStudyUrl }}">{{ $project->title }}</a>
                                                 </h3>
                                                 @if ($project->description)
                                                     <p class="card-desc">{{ $project->description }}</p>
                                                 @endif
+                                                <p class="card-desc"><a href="{{ $caseStudyUrl }}" style="color: var(--gold, #5eead4); font-size: 13px;">Read full case study →</a></p>
                                             </div>
                                             <div class="fn__hidden">
                                                 <p class="fn__cat">{{ $primaryTag ? ucfirst($primaryTag) : $project->title }}
@@ -2037,10 +2058,12 @@
                                     <h2 class="subtitle">Services I Offer</h2>
                                     <h3 class="title">Turn Ideas Into Powerful Web Solutions</h3>
                                     <p class="desc">
-                                        I help businesses and startups build modern, high-performing web applications
-                                        using the Laravel framework. Whether you're launching a new product, scaling
-                                        your operations, or improving your online presence, I deliver custom solutions
-                                        that drive real results.
+                                        Looking to hire a Laravel developer to build a custom website, a management
+                                        system, or a full SaaS platform? I help businesses and startups build modern,
+                                        high-performing web applications and management systems using the Laravel
+                                        framework. Whether you're launching a new product, digitizing operations with
+                                        a custom management system, or scaling an existing platform, I deliver custom
+                                        solutions that drive real results.
                                     </p>
                                 </div>
                                 <!-- /Main Title -->
@@ -2229,7 +2252,7 @@
                         <div class="border2"></div>
 
                         @php
-                            $profileImageUrl = $randomProfileImage?->image_url ?: ($portfolio->about?->profile_image_url ?: asset('img/shakeel1.png'));
+                            $profileImageUrl = $randomProfileImage?->image_url ?: ($portfolio->about?->profile_image_url ?: asset('img/shakeel1.webp'));
                             $profileImageAlt = $randomProfileImage?->alt_text ?: ($portfolio->about?->alt_text ?: trim(($portfolio->user?->name ?: '').($portfolio->hero_subtitle ? ' — '.$portfolio->hero_subtitle : '')));
                         @endphp
                         <div class="img_holder">

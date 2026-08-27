@@ -24,7 +24,7 @@ class SitemapController extends Controller
 
         $urls = [];
 
-        Portfolio::with(['posts' => fn ($query) => $query->published()])->each(function (Portfolio $portfolio) use (&$urls, $defaultPortfolioId) {
+        Portfolio::with(['posts' => fn ($query) => $query->published(), 'projects'])->each(function (Portfolio $portfolio) use (&$urls, $defaultPortfolioId) {
             $urls = [...$urls, ...$this->urlsFor($portfolio, isDefault: $portfolio->id === $defaultPortfolioId)];
         });
 
@@ -62,6 +62,18 @@ class SitemapController extends Controller
             $urls[] = [
                 'loc' => $isDefault ? route('blog.show', $post->slug) : route('portfolio.blog.show', [$portfolio, $post->slug]),
                 'lastmod' => $post->updated_at,
+                'priority' => '0.7',
+            ];
+        }
+
+        $projects = $portfolio->relationLoaded('projects')
+            ? $portfolio->projects
+            : $portfolio->projects()->get();
+
+        foreach ($projects as $project) {
+            $urls[] = [
+                'loc' => $isDefault ? route('work.show', $project->slug) : route('portfolio.work.show', [$portfolio, $project->slug]),
+                'lastmod' => $project->updated_at,
                 'priority' => '0.7',
             ];
         }
@@ -148,7 +160,10 @@ class SitemapController extends Controller
 
             foreach ($portfolio->projects as $project) {
                 $desc = trim((string) ($project->description ?? ''));
-                $lines[] = '- '.$project->title.($desc !== '' ? ': '.$desc : '');
+                $projectUrl = $isDefault
+                    ? route('work.show', $project->slug)
+                    : route('portfolio.work.show', [$portfolio, $project->slug]);
+                $lines[] = '- ['.$project->title.']('.$projectUrl.')'.($desc !== '' ? ': '.$desc : '');
             }
         }
 

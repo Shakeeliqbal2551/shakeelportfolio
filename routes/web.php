@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PortfolioContactController;
+use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\SitemapController;
 use App\Livewire\PortfolioPage;
 use App\Models\Portfolio;
@@ -30,6 +31,10 @@ Route::get('/blog', [BlogController::class, 'indexDefault'])->name('blog.index')
 Route::get('/portfolio/'.Portfolio::DEFAULT_SLUG.'/blog/{post}', fn (string $post) => redirect()->route('blog.show', $post, status: 301));
 Route::get('/portfolio/{portfolio:slug}/blog/{post}', [BlogController::class, 'show'])->name('portfolio.blog.show');
 Route::get('/blog/{post}', [BlogController::class, 'showDefault'])->name('blog.show');
+
+Route::get('/portfolio/'.Portfolio::DEFAULT_SLUG.'/work/{project}', fn (string $project) => redirect()->route('work.show', $project, status: 301));
+Route::get('/portfolio/{portfolio:slug}/work/{project}', [ProjectController::class, 'show'])->name('portfolio.work.show');
+Route::get('/work/{project}', [ProjectController::class, 'showDefault'])->name('work.show');
 
 Route::livewire('dashboard', 'pages::dashboard-home')
     ->middleware(['auth', 'verified'])
