@@ -1,16 +1,23 @@
 <?php
 
 use App\Models\Portfolio;
+use App\Services\CompressesUploadedImages;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Component;
+use Livewire\WithFileUploads;
 
 new class extends Component {
+    use WithFileUploads;
+
     public Portfolio $portfolio;
 
     public string $slug = '';
     public string $theme = 'default';
     public string $site_title = '';
     public ?string $meta_description = null;
+    public $og_image = null;
+    public ?string $existingOgImagePath = null;
     public ?string $blog_meta_description = null;
 
     public ?string $hero_badge_text = null;
@@ -51,6 +58,7 @@ new class extends Component {
         $this->theme = $portfolio->theme;
         $this->site_title = $portfolio->site_title;
         $this->meta_description = $portfolio->meta_description;
+        $this->existingOgImagePath = $portfolio->og_image_path;
         $this->blog_meta_description = $portfolio->blog_meta_description;
 
         $this->hero_badge_text = $portfolio->hero_badge_text;
@@ -82,12 +90,24 @@ new class extends Component {
         $this->whatsapp_number = $portfolio->whatsapp_number;
     }
 
+    public function removeOgImage(): void
+    {
+        if ($this->portfolio->og_image_path) {
+            Storage::disk('public')->delete($this->portfolio->og_image_path);
+            $this->portfolio->update(['og_image_path' => null]);
+        }
+
+        $this->existingOgImagePath = null;
+        $this->og_image = null;
+    }
+
     public function save(): void
     {
         $validated = $this->validate([
             'slug' => 'required|string|max:255|alpha_dash|unique:portfolios,slug,'.$this->portfolio->id,
             'site_title' => 'required|string|max:60',
             'meta_description' => 'nullable|string|max:160',
+            'og_image' => 'nullable|image|max:4096',
             'blog_meta_description' => 'nullable|string|max:160',
             'hero_badge_text' => 'nullable|string|max:255',
             'hero_subtitle' => 'nullable|string|max:255',
@@ -114,7 +134,19 @@ new class extends Component {
             fn ($item) => filled($item)
         ));
 
+        unset($validated['og_image']);
+
+        if ($this->og_image) {
+            if ($this->portfolio->og_image_path) {
+                Storage::disk('public')->delete($this->portfolio->og_image_path);
+            }
+
+            $validated['og_image_path'] = CompressesUploadedImages::store($this->og_image, "portfolios/{$this->portfolio->id}/og");
+        }
+
         $this->portfolio->update($validated);
+        $this->existingOgImagePath = $this->portfolio->og_image_path;
+        $this->og_image = null;
 
         $this->dispatch('portfolio-settings-updated');
     }
@@ -152,6 +184,37 @@ new class extends Component {
             <flux:select :label="__('Theme')" disabled>
                 <flux:select.option selected>{{ __('Default') }}</flux:select.option>
             </flux:select>
+        </div>
+
+        <flux:separator />
+
+        <div class="space-y-4">
+            <div>
+                <flux:heading size="lg">{{ __('Social Share Image') }}</flux:heading>
+                <flux:subheading>{{ __('Shown when your site is shared on Facebook, LinkedIn, X, WhatsApp, and Slack — and used as the fallback image for AI/search results.') }}</flux:subheading>
+            </div>
+
+            @if ($existingOgImagePath && ! $og_image)
+                <img src="{{ \App\Models\Portfolio::resolveFileUrl($existingOgImagePath) }}" alt="{{ __('Current social share image') }}" class="w-full max-w-md rounded-lg border border-zinc-200 object-cover dark:border-zinc-700" style="aspect-ratio: 1200/630;">
+            @elseif ($og_image)
+                <img src="{{ $og_image->temporaryUrl() }}" alt="{{ __('New social share image preview') }}" class="w-full max-w-md rounded-lg border border-zinc-200 object-cover dark:border-zinc-700" style="aspect-ratio: 1200/630;">
+            @else
+                <div class="flex w-full max-w-md items-center justify-center rounded-lg border border-dashed border-zinc-300 p-8 text-center dark:border-zinc-600" style="aspect-ratio: 1200/630;">
+                    <flux:text class="text-zinc-500">{{ __('No custom image yet — a generic branded image is used until you upload one.') }}</flux:text>
+                </div>
+            @endif
+
+            <flux:input
+                wire:model="og_image"
+                :label="__('Upload Image')"
+                type="file"
+                accept="image/*"
+                description="{{ __('Recommended size: 1200×630px (landscape). Square or portrait photos get cropped awkwardly when shared on social media — a wide banner with your name/title works best.') }}"
+            />
+
+            @if ($existingOgImagePath)
+                <flux:button size="sm" variant="subtle" wire:click="removeOgImage">{{ __('Remove current image') }}</flux:button>
+            @endif
         </div>
 
         <flux:separator />

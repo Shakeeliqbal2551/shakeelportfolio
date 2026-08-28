@@ -44,6 +44,10 @@
         @endforeach
     @endisset
 
+    @if (($ogType ?? null) === 'article')
+        <link rel="stylesheet" href="{{ asset('css/atom-one-dark.min.css') }}">
+    @endif
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Inter:wght@400;500;600&family=Jost:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -155,6 +159,37 @@
         .post-body ul, .post-body ol { margin: 0 0 1.2em; padding-left: 1.5em; }
         .post-body a { color: var(--gold); }
         .post-body img { max-width: 100%; border-radius: 10px; }
+
+        /* Code blocks — matches the classes Quill's syntax module saves
+           (ql-code-block-container/ql-code-block + hljs-* token spans),
+           so a post written in the dashboard renders identically here. */
+        .post-body .ql-code-block-container {
+            background: #282c34;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin: 0 0 1.4em;
+            overflow-x: auto;
+        }
+        .post-body .ql-code-block {
+            color: #abb2bf;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre;
+        }
+        .post-body pre {
+            background: #282c34;
+            color: #abb2bf;
+            border-radius: 10px;
+            padding: 18px 20px;
+            margin: 0 0 1.4em;
+            overflow-x: auto;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            white-space: pre;
+        }
+        .post-body code { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
         .back-link { display: inline-block; margin-bottom: 24px; color: var(--text-muted); text-decoration: none; font-size: 13px; }
         .back-link:hover { color: var(--gold); }
 

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\HasResolvableFileUrl;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -10,7 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Portfolio extends Model
 {
-    use HasFactory;
+    use HasFactory, HasResolvableFileUrl;
 
     public const DEFAULT_SLUG = 'shakeel-iqbal-cheema';
 
@@ -20,6 +21,7 @@ class Portfolio extends Model
         'theme',
         'site_title',
         'meta_description',
+        'og_image_path',
         'blog_meta_description',
         'hero_badge_text',
         'hero_subtitle',
@@ -63,6 +65,11 @@ class Portfolio extends Model
     public function isDefault(): bool
     {
         return $this->slug === self::DEFAULT_SLUG;
+    }
+
+    public function getOgImageUrlAttribute(): ?string
+    {
+        return static::resolveFileUrl($this->og_image_path);
     }
 
     public function user(): BelongsTo

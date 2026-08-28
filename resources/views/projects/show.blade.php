@@ -1,7 +1,7 @@
 @php
     $seoTitle = $project->seo_title;
     $seoDescription = $project->seo_description;
-    $seoImage = $project->image_url ?: asset('img/og-default.jpg');
+    $seoImage = $project->image_url ?: ($portfolio->og_image_url ?: asset('img/og-default.jpg'));
     $canonicalUrl = request()->url();
     $isDefaultPortfolio = $portfolio->isDefault() || request()->attributes->has('resolvedPortfolio');
     $homeUrl = $isDefaultPortfolio ? url('/') : route('portfolio.show', $portfolio);

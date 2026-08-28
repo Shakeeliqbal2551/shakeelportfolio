@@ -239,6 +239,31 @@ class PortfolioDashboardSmokeTest extends TestCase
         $this->assertEquals('Years', $this->portfolio->hero_stats[0]['label']);
     }
 
+    public function test_og_image_upload_and_removal(): void
+    {
+        Storage::fake('public');
+
+        $image = UploadedFile::fake()->image('og.jpg', 1200, 630);
+
+        \Livewire\Livewire::test('pages::portfolio.settings')
+            ->set('og_image', $image)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->portfolio->refresh();
+        $this->assertNotNull($this->portfolio->og_image_path);
+        Storage::disk('public')->assertExists($this->portfolio->og_image_path);
+
+        $oldPath = $this->portfolio->og_image_path;
+
+        \Livewire\Livewire::test('pages::portfolio.settings')
+            ->call('removeOgImage');
+
+        $this->portfolio->refresh();
+        $this->assertNull($this->portfolio->og_image_path);
+        Storage::disk('public')->assertMissing($oldPath);
+    }
+
     public function test_about_resume_upload_replaces_old_file(): void
     {
         Storage::fake('public');

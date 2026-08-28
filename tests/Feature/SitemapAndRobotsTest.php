@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Portfolio;
 use App\Models\Post;
+use App\Models\Project;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Tests\TestCase;
@@ -85,6 +86,54 @@ class SitemapAndRobotsTest extends TestCase
         $content = $this->get(route('sitemap'))->getContent();
 
         $this->assertStringContainsString(route('portfolio.show', $otherPortfolio), $content);
+    }
+
+    public function test_sitemap_includes_project_case_study_urls(): void
+    {
+        $user = User::factory()->create();
+
+        $portfolio = Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'shakeel-iqbal-cheema',
+            'site_title' => 'Default Portfolio',
+        ]);
+
+        $project = Project::create([
+            'portfolio_id' => $portfolio->id,
+            'title' => 'Acme HR',
+            'description' => 'HR management system.',
+            'sort_order' => 0,
+        ]);
+
+        $content = $this->get(route('sitemap'))->getContent();
+
+        $this->assertStringContainsString(route('work.show', $project->slug), $content);
+    }
+
+    public function test_llms_txt_returns_200_and_lists_projects(): void
+    {
+        $user = User::factory()->create();
+
+        $portfolio = Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'shakeel-iqbal-cheema',
+            'site_title' => 'Default Portfolio',
+        ]);
+
+        Project::create([
+            'portfolio_id' => $portfolio->id,
+            'title' => 'Acme HR',
+            'description' => 'HR management system.',
+            'sort_order' => 0,
+        ]);
+
+        $response = $this->get(route('llms-txt'));
+
+        $response->assertOk();
+        $content = $response->getContent();
+
+        $this->assertStringContainsString('Acme HR', $content);
+        $this->assertStringContainsString(route('work.show', 'acme-hr'), $content);
     }
 
     public function test_robots_txt_returns_200_and_references_sitemap(): void

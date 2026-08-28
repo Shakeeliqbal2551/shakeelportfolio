@@ -1,7 +1,7 @@
 @php
     $seoTitle = $post->meta_title ?: $post->title;
     $seoDescription = $post->meta_description ?: $post->excerpt;
-    $seoImage = $post->featured_image_url ?: asset('img/og-default.jpg');
+    $seoImage = $post->featured_image_url ?: ($portfolio->og_image_url ?: asset('img/og-default.jpg'));
     $canonicalUrl = request()->url();
     $publishedTime = $post->isPublished() ? $post->published_at->toAtomString() : null;
     $isDefaultPortfolio = $portfolio->isDefault() || request()->attributes->has('resolvedPortfolio');

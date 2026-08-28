@@ -295,6 +295,71 @@ class PortfolioPublicPageTest extends TestCase
         $response->assertDontSee('inactive.png');
     }
 
+    public function test_project_case_study_page_renders_with_seo_title(): void
+    {
+        $user = User::factory()->create();
+        $portfolio = Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'case-study-tenant',
+            'site_title' => 'Case Study Tenant',
+        ]);
+
+        $project = Project::create([
+            'portfolio_id' => $portfolio->id,
+            'title' => 'Acme HR',
+            'description' => 'Complete HR management system for Acme Corp.',
+            'details' => "Key features:\n- Payroll\n- Leave tracking",
+            'sort_order' => 0,
+        ]);
+
+        $this->assertSame('acme-hr', $project->slug);
+
+        $response = $this->get(route('portfolio.work.show', [$portfolio, $project->slug]));
+
+        $response->assertOk();
+        $response->assertSee('HR Management System Development Case Study', false);
+        $response->assertSee('Payroll', false);
+    }
+
+    public function test_project_slugs_are_unique_per_portfolio(): void
+    {
+        $user = User::factory()->create();
+        $portfolio = Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'slug-collision-tenant',
+            'site_title' => 'Slug Collision Tenant',
+        ]);
+
+        $first = Project::create([
+            'portfolio_id' => $portfolio->id,
+            'title' => 'Acme',
+            'description' => 'First project.',
+            'sort_order' => 0,
+        ]);
+
+        $second = Project::create([
+            'portfolio_id' => $portfolio->id,
+            'title' => 'Acme',
+            'description' => 'Second project with the same title.',
+            'sort_order' => 1,
+        ]);
+
+        $this->assertSame('acme', $first->slug);
+        $this->assertSame('acme-2', $second->slug);
+    }
+
+    public function test_unknown_project_slug_returns_404(): void
+    {
+        $user = User::factory()->create();
+        $portfolio = Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'missing-project-tenant',
+            'site_title' => 'Missing Project Tenant',
+        ]);
+
+        $this->get(route('portfolio.work.show', [$portfolio, 'does-not-exist']))->assertNotFound();
+    }
+
     public function test_venture_role_badge_renders_for_non_client_projects_only(): void
     {
         $user = User::factory()->create();

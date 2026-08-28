@@ -129,7 +129,7 @@ new class extends Component {
                 <flux:label>{{ __('Body') }}</flux:label>
 
                 <input id="post-body" type="hidden" wire:model="body">
-                <trix-editor input="post-body" class="trix-content" placeholder="{{ __('Write your post…') }}"></trix-editor>
+                <div id="post-body-editor" wire:ignore></div>
 
                 <flux:error name="body" />
             </flux:field>
@@ -163,76 +163,108 @@ new class extends Component {
     </form>
 </section>
 
-<!-- Trix rich text editor (CDN — see report for rationale) -->
-<link rel="stylesheet" href="https://unpkg.com/trix@2/dist/trix.css">
-<script type="text/javascript" src="https://unpkg.com/trix@2/dist/trix.umd.min.js"></script>
+@assets
+<link rel="stylesheet" href="{{ asset('css/quill.snow.css') }}">
+<link rel="stylesheet" href="{{ asset('css/atom-one-dark.min.css') }}">
+<script src="{{ asset('js/highlight.min.js') }}"></script>
+<script src="{{ asset('js/quill.js') }}"></script>
+@endassets
 
-<style>
-    trix-toolbar .trix-button-group {
-        border: 1px solid rgb(212 212 216 / 1);
-        border-radius: 0.375rem;
-        margin-bottom: 0.5rem;
+<style global>
+    .ql-toolbar.ql-snow {
+        border-color: rgb(212 212 216 / 1);
+        border-radius: 0.5rem 0.5rem 0 0;
     }
-    :is(.dark) trix-toolbar .trix-button-group {
+    :is(.dark) .ql-toolbar.ql-snow {
         border-color: rgb(63 63 70 / 1);
     }
-    trix-toolbar .trix-button {
-        font-size: 0.8rem;
-        color: rgb(63 63 70 / 1);
-        background: transparent;
-        border: none;
-        border-right: 1px solid rgb(212 212 216 / 1);
-        cursor: pointer;
+    :is(.dark) .ql-toolbar.ql-snow .ql-stroke { stroke: rgb(228 228 231 / 1); }
+    :is(.dark) .ql-toolbar.ql-snow .ql-fill { fill: rgb(228 228 231 / 1); }
+    :is(.dark) .ql-toolbar.ql-snow .ql-picker-label { color: rgb(228 228 231 / 1); }
+    .ql-container.ql-snow {
+        border-color: rgb(212 212 216 / 1);
+        border-radius: 0 0 0.5rem 0.5rem;
+        font-size: 15px;
     }
-    :is(.dark) trix-toolbar .trix-button {
-        color: rgb(228 228 231 / 1);
-        border-right-color: rgb(63 63 70 / 1);
+    :is(.dark) .ql-container.ql-snow {
+        border-color: rgb(63 63 70 / 1);
     }
-    trix-toolbar .trix-button.trix-active {
-        background: rgb(228 228 231 / 1);
-    }
-    :is(.dark) trix-toolbar .trix-button.trix-active {
-        background: rgb(63 63 70 / 1);
-    }
-    trix-toolbar .trix-button-group-spacer {
-        flex: 1;
-    }
-    trix-editor.trix-content {
+    #post-body-editor .ql-editor {
         min-height: 16rem;
-        padding: 0.75rem 1rem;
-        border: 1px solid rgb(212 212 216 / 1);
-        border-radius: 0.5rem;
         background: white;
         color: rgb(24 24 27 / 1);
     }
-    :is(.dark) trix-editor.trix-content {
-        border-color: rgb(63 63 70 / 1);
+    :is(.dark) #post-body-editor .ql-editor {
         background: rgb(63 63 70 / 1);
         color: white;
     }
-    trix-editor.trix-content:focus {
-        outline: 2px solid transparent;
-        outline-offset: 2px;
+    #post-body-editor .ql-editor.ql-blank::before {
+        color: rgb(113 113 122 / 1);
+        font-style: normal;
     }
-    .trix-content h1 { font-size: 1.5em; font-weight: 600; }
-    .trix-content ul { list-style-type: disc; padding-left: 1.5em; }
-    .trix-content ol { list-style-type: decimal; padding-left: 1.5em; }
-    .trix-content blockquote { border-left: 3px solid rgb(212 212 216 / 1); padding-left: 1em; color: rgb(113 113 122 / 1); }
+    #post-body-editor .ql-editor h1 { font-size: 1.5em; font-weight: 600; }
+    #post-body-editor .ql-editor h2 { font-size: 1.3em; font-weight: 600; }
+    #post-body-editor .ql-editor blockquote { border-left: 3px solid rgb(212 212 216 / 1); padding-left: 1em; color: rgb(113 113 122 / 1); }
+    #post-body-editor .ql-editor .ql-code-block-container {
+        background: #282c34;
+        border-radius: 0.5rem;
+        padding: 1em;
+        margin-bottom: 1em;
+        overflow-x: auto;
+    }
+    #post-body-editor .ql-editor .ql-code-block {
+        color: #abb2bf;
+        font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+        font-size: 0.9em;
+        white-space: pre;
+    }
 </style>
 
+@script
 <script>
-document.addEventListener('trix-initialize', function (event) {
+    const editorEl = document.getElementById('post-body-editor');
     const hiddenInput = document.getElementById('post-body');
-    if (hiddenInput && event.target.inputElement === hiddenInput && hiddenInput.value) {
-        event.target.editor.loadHTML(hiddenInput.value);
-    }
-});
 
-document.addEventListener('trix-change', function (event) {
-    const hiddenInput = document.getElementById('post-body');
-    if (hiddenInput && event.target.inputElement === hiddenInput) {
-        hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+    const quill = new Quill(editorEl, {
+        theme: 'snow',
+        placeholder: 'Write your post…',
+        modules: {
+            syntax: { hljs: window.hljs },
+            toolbar: [
+                [{ header: [2, 3, false] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ list: 'ordered' }, { list: 'bullet' }],
+                ['link', 'image'],
+                ['clean'],
+            ],
+        },
+    });
+
+    // Read the initial value from $wire directly rather than the hidden
+    // input's DOM value — Livewire hydrates wire:model bindings via JS
+    // after page load rather than rendering a value="" attribute, so the
+    // input's .value can still be empty at the moment this script runs.
+    if ($wire.body) {
+        quill.clipboard.dangerouslyPasteHTML($wire.body);
     }
-});
+
+    quill.on('text-change', function () {
+        // quill.root is the actual editable content div (.ql-editor);
+        // its innerHTML is used instead of getSemanticHTML() because the
+        // semantic serializer strips code-block syntax-highlighting spans
+        // down to a bare <pre data-language>, losing highlighting on save.
+        // But root.innerHTML still contains Quill's own UI-only controls
+        // (the code-block language picker <select>, marked "ql-ui") which
+        // must be stripped before persisting — they're editor chrome, not
+        // post content, and the sibling .ql-tooltip (link/embed popover)
+        // lives outside root entirely so it's already excluded here.
+        const clone = quill.root.cloneNode(true);
+        clone.querySelectorAll('.ql-ui').forEach((el) => el.remove());
+
+        hiddenInput.value = clone.innerHTML;
+        hiddenInput.dispatchEvent(new Event('input', { bubbles: true }));
+    });
 </script>
+@endscript
 </div>

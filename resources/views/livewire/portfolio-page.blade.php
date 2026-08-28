@@ -12,7 +12,9 @@
         // Dedicated 1200x630 (1.91:1) share image — social scrapers crop
         // square/portrait photos awkwardly, so og:image/twitter:image use
         // this instead of the raw profile photo used for JSON-LD/Person.
-        $ogImage = asset('img/og-default.jpg');
+        // Falls back to the platform's generic branded image when a tenant
+        // hasn't uploaded their own yet.
+        $ogImage = $portfolio->og_image_url ?: asset('img/og-default.jpg');
         // On a verified tenant custom domain the portfolio is served at "/"
         // regardless of slug, so the canonical URL should be the domain root.
         $isDefaultPortfolioForNav = $portfolio->isDefault() || request()->attributes->has('resolvedPortfolio');
