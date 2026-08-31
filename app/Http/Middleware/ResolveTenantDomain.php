@@ -22,6 +22,22 @@ class ResolveTenantDomain
             ->with('portfolio')
             ->first();
 
+        // Treat an unregistered www hostname as an alias of a verified apex
+        // domain. Exact matches above still win, allowing www to be configured
+        // as an independent domain when desired.
+        if (! $domain && str_starts_with($host, 'www.')) {
+            $apexHost = substr($host, 4);
+            $apexDomainExists = Domain::where('host', $apexHost)
+                ->where('verification_status', 'verified')
+                ->exists();
+
+            if ($apexDomainExists) {
+                $redirectUrl = $request->getScheme().'://'.$apexHost.$request->getRequestUri();
+
+                return redirect()->to($redirectUrl, 301);
+            }
+        }
+
         if (! $domain || ! $domain->portfolio) {
             return response()->view('errors.domain-not-found', [], 404);
         }
