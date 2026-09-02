@@ -19,6 +19,7 @@ class Portfolio extends Model
         'user_id',
         'slug',
         'theme',
+        'logo_path',
         'site_title',
         'meta_description',
         'og_image_path',
@@ -70,6 +71,11 @@ class Portfolio extends Model
     public function getOgImageUrlAttribute(): ?string
     {
         return static::resolveFileUrl($this->og_image_path);
+    }
+
+    public function getLogoUrlAttribute(): ?string
+    {
+        return static::resolveFileUrl($this->logo_path);
     }
 
     public function user(): BelongsTo

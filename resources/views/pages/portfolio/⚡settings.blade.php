@@ -16,6 +16,8 @@ new class extends Component {
     public string $theme = 'default';
     public string $site_title = '';
     public ?string $meta_description = null;
+    public $logo = null;
+    public ?string $existingLogoPath = null;
     public $og_image = null;
     public ?string $existingOgImagePath = null;
     public ?string $blog_meta_description = null;
@@ -58,6 +60,7 @@ new class extends Component {
         $this->theme = $portfolio->theme;
         $this->site_title = $portfolio->site_title;
         $this->meta_description = $portfolio->meta_description;
+        $this->existingLogoPath = $portfolio->logo_path;
         $this->existingOgImagePath = $portfolio->og_image_path;
         $this->blog_meta_description = $portfolio->blog_meta_description;
 
@@ -101,12 +104,24 @@ new class extends Component {
         $this->og_image = null;
     }
 
+    public function removeLogo(): void
+    {
+        if ($this->portfolio->logo_path) {
+            Storage::disk('public')->delete($this->portfolio->logo_path);
+            $this->portfolio->update(['logo_path' => null]);
+        }
+
+        $this->existingLogoPath = null;
+        $this->logo = null;
+    }
+
     public function save(): void
     {
         $validated = $this->validate([
             'slug' => 'required|string|max:255|alpha_dash|unique:portfolios,slug,'.$this->portfolio->id,
             'site_title' => 'required|string|max:60',
             'meta_description' => 'nullable|string|max:160',
+            'logo' => 'nullable|image|max:2048',
             'og_image' => 'nullable|image|max:4096',
             'blog_meta_description' => 'nullable|string|max:160',
             'hero_badge_text' => 'nullable|string|max:255',
@@ -134,7 +149,15 @@ new class extends Component {
             fn ($item) => filled($item)
         ));
 
-        unset($validated['og_image']);
+        unset($validated['logo'], $validated['og_image']);
+
+        if ($this->logo) {
+            if ($this->portfolio->logo_path) {
+                Storage::disk('public')->delete($this->portfolio->logo_path);
+            }
+
+            $validated['logo_path'] = CompressesUploadedImages::store($this->logo, "portfolios/{$this->portfolio->id}/logo");
+        }
 
         if ($this->og_image) {
             if ($this->portfolio->og_image_path) {
@@ -145,7 +168,9 @@ new class extends Component {
         }
 
         $this->portfolio->update($validated);
+        $this->existingLogoPath = $this->portfolio->logo_path;
         $this->existingOgImagePath = $this->portfolio->og_image_path;
+        $this->logo = null;
         $this->og_image = null;
 
         $this->dispatch('portfolio-settings-updated');
@@ -184,6 +209,32 @@ new class extends Component {
             <flux:select :label="__('Theme')" disabled>
                 <flux:select.option selected>{{ __('Default') }}</flux:select.option>
             </flux:select>
+        </div>
+
+        <flux:separator />
+
+        <div class="space-y-4">
+            <div>
+                <flux:heading size="lg">{{ __('Site Logo') }}</flux:heading>
+                <flux:subheading>{{ __('Shown in the site header. Your first-name initial is shown when no logo is uploaded.') }}</flux:subheading>
+            </div>
+
+            @if ($existingLogoPath && ! $logo)
+                <img src="{{ \App\Models\Portfolio::resolveFileUrl($existingLogoPath) }}" alt="{{ __('Current site logo') }}" class="h-16 w-16 rounded-full border border-zinc-200 object-contain dark:border-zinc-700">
+            @elseif ($logo)
+                <img src="{{ $logo->temporaryUrl() }}" alt="{{ __('New site logo preview') }}" class="h-16 w-16 rounded-full border border-zinc-200 object-contain dark:border-zinc-700">
+            @else
+                <div class="flex h-16 w-16 items-center justify-center rounded-full bg-cyan-500 text-2xl font-bold uppercase text-zinc-950">
+                    {{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr(trim((string) auth()->user()->name), 0, 1)) ?: '?' }}
+                </div>
+            @endif
+
+            <flux:input wire:model="logo" :label="__('Upload Logo')" type="file" accept="image/*"
+                :description="__('Recommended: a square PNG, JPG, or WebP image up to 2 MB.')" />
+
+            @if ($existingLogoPath)
+                <flux:button size="sm" variant="subtle" wire:click="removeLogo">{{ __('Remove current logo') }}</flux:button>
+            @endif
         </div>
 
         <flux:separator />

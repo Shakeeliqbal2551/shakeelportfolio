@@ -295,6 +295,62 @@ class PortfolioPublicPageTest extends TestCase
         $response->assertDontSee('inactive.png');
     }
 
+    public function test_public_page_uses_neutral_default_when_no_profile_image_exists(): void
+    {
+        $user = User::factory()->create();
+        $portfolio = Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'new-tenant',
+            'site_title' => 'New Tenant',
+            'hero_reassurance_items' => ['a'],
+            'hero_stats' => [['label' => 'L1', 'value' => 'V1']],
+        ]);
+
+        $response = $this->get(route('portfolio.show', $portfolio->slug));
+
+        $response->assertOk();
+        $response->assertSee('img/default-profile-avatar.png');
+        $response->assertDontSee('img/shakeel1.webp');
+    }
+
+    public function test_public_page_uses_first_name_initial_when_no_logo_exists(): void
+    {
+        $user = User::factory()->create(['name' => 'jawad Shabbir']);
+        $portfolio = Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'jawad-tenant',
+            'site_title' => 'Jawad Tenant',
+            'hero_reassurance_items' => ['a'],
+            'hero_stats' => [['label' => 'L1', 'value' => 'V1']],
+        ]);
+
+        $response = $this->get(route('portfolio.show', $portfolio->slug));
+
+        $response->assertOk();
+        $response->assertSee('header-logo-initial');
+        $this->assertMatchesRegularExpression('/header-logo-initial[^>]*>\s*J\s*<\/span>/', $response->getContent());
+        $response->assertDontSee('img/logo/logo.png');
+    }
+
+    public function test_public_page_uses_uploaded_logo_instead_of_initial(): void
+    {
+        $user = User::factory()->create(['name' => 'Jawad Shabbir']);
+        $portfolio = Portfolio::create([
+            'user_id' => $user->id,
+            'slug' => 'logo-tenant',
+            'site_title' => 'Logo Tenant',
+            'logo_path' => 'portfolios/1/logo/custom.webp',
+            'hero_reassurance_items' => ['a'],
+            'hero_stats' => [['label' => 'L1', 'value' => 'V1']],
+        ]);
+
+        $response = $this->get(route('portfolio.show', $portfolio->slug));
+
+        $response->assertOk();
+        $response->assertSee('custom.webp');
+        $response->assertDontSee('<span class="header-logo-initial"', false);
+    }
+
     public function test_project_case_study_page_renders_with_seo_title(): void
     {
         $user = User::factory()->create();

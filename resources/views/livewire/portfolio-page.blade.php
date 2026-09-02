@@ -8,7 +8,7 @@
     @php
         $seoTitle = $portfolio->site_title ?: ($portfolio->about?->title ?: 'Portfolio');
         $seoDescription = $portfolio->meta_description ?: ($portfolio->about?->bio ?: '');
-        $seoImage = $portfolio->about?->profile_image_url ?: asset('img/shakeel1.webp');
+        $seoImage = $portfolio->about?->profile_image_url ?: asset('img/default-profile-avatar.png');
         // Dedicated 1200x630 (1.91:1) share image — social scrapers crop
         // square/portrait photos awkwardly, so og:image/twitter:image use
         // this instead of the raw profile photo used for JSON-LD/Person.
@@ -100,6 +100,20 @@
             height: 38px;
             width: auto;
             display: block;
+        }
+        .header-logo-initial {
+            align-items: center;
+            background: #2dd4bf;
+            border-radius: 9999px;
+            color: #081018;
+            display: inline-flex;
+            font-size: 20px;
+            font-weight: 700;
+            height: 42px;
+            justify-content: center;
+            line-height: 1;
+            text-transform: uppercase;
+            width: 42px;
         }
         .header-nav ul {
             display: flex;
@@ -1426,7 +1440,13 @@
             <div class="header-inner">
                 <div class="header-logo">
                     <a href="#home">
-                        <img src="{{ asset('img/logo/logo.png') }}" alt="{{ $portfolio->user?->name }}" width="70" height="76" />
+                        @if ($portfolio->logo_url)
+                            <img src="{{ $portfolio->logo_url }}" alt="{{ $portfolio->user?->name }}" width="70" height="76" />
+                        @else
+                            <span class="header-logo-initial" aria-label="{{ __(':name logo', ['name' => $portfolio->user?->name ?: __('Portfolio')]) }}">
+                                {{ \Illuminate\Support\Str::upper(\Illuminate\Support\Str::substr(trim((string) $portfolio->user?->name), 0, 1)) ?: '?' }}
+                            </span>
+                        @endif
                     </a>
                 </div>
                 <nav class="header-nav">
@@ -2254,7 +2274,7 @@
                         <div class="border2"></div>
 
                         @php
-                            $profileImageUrl = $randomProfileImage?->image_url ?: ($portfolio->about?->profile_image_url ?: asset('img/shakeel1.webp'));
+                            $profileImageUrl = $randomProfileImage?->image_url ?: ($portfolio->about?->profile_image_url ?: asset('img/default-profile-avatar.png'));
                             $profileImageAlt = $randomProfileImage?->alt_text ?: ($portfolio->about?->alt_text ?: trim(($portfolio->user?->name ?: '').($portfolio->hero_subtitle ? ' — '.$portfolio->hero_subtitle : '')));
                         @endphp
                         <div class="img_holder">

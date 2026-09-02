@@ -59,6 +59,11 @@ new class extends Component {
                             @endforelse
                         </td>
                         <td class="px-4 py-3">
+                            @unless ($tenant->isAdmin())
+                                <flux:button size="sm" variant="subtle" :href="route('admin.tenants.credentials', $tenant)" wire:navigate>
+                                    {{ __('Set Password') }}
+                                </flux:button>
+                            @endunless
                             @if ($tenant->portfolio)
                                 <flux:button size="sm" variant="subtle" :href="route('admin.tenants.domains', $tenant)" wire:navigate>
                                     {{ __('Manage Domains') }}

@@ -264,6 +264,31 @@ class PortfolioDashboardSmokeTest extends TestCase
         Storage::disk('public')->assertMissing($oldPath);
     }
 
+    public function test_logo_upload_and_removal(): void
+    {
+        Storage::fake('public');
+
+        $image = UploadedFile::fake()->image('logo.png', 512, 512);
+
+        \Livewire\Livewire::test('pages::portfolio.settings')
+            ->set('logo', $image)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->portfolio->refresh();
+        $this->assertNotNull($this->portfolio->logo_path);
+        Storage::disk('public')->assertExists($this->portfolio->logo_path);
+
+        $oldPath = $this->portfolio->logo_path;
+
+        \Livewire\Livewire::test('pages::portfolio.settings')
+            ->call('removeLogo');
+
+        $this->portfolio->refresh();
+        $this->assertNull($this->portfolio->logo_path);
+        Storage::disk('public')->assertMissing($oldPath);
+    }
+
     public function test_about_resume_upload_replaces_old_file(): void
     {
         Storage::fake('public');
