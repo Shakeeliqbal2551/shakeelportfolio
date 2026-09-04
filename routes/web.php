@@ -5,6 +5,7 @@ use App\Http\Controllers\PortfolioContactController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\ResumeController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Controllers\TenantMediaController;
 use App\Livewire\PortfolioPage;
 use App\Models\Portfolio;
 use Illuminate\Support\Facades\Route;
@@ -12,6 +13,9 @@ use Illuminate\Support\Facades\Route;
 Route::get('/sitemap.xml', [SitemapController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', [SitemapController::class, 'robots'])->name('robots');
 Route::get('/llms.txt', [SitemapController::class, 'llmsTxt'])->name('llms-txt');
+Route::get('/portfolio-media/{path}', TenantMediaController::class)
+    ->where('path', 'portfolios/.*')
+    ->name('portfolio.media');
 
 Route::get('/', PortfolioPage::class)->name('home');
 

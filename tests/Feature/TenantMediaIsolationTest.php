@@ -33,11 +33,26 @@ class TenantMediaIsolationTest extends TestCase
         $response = $this->get('http://jawad.example/');
 
         $response->assertOk();
-        $response->assertSee('/storage/portfolios/1/logo/logo.webp', false);
-        $response->assertSee('/storage/portfolios/1/favicon/icon.webp', false);
-        $response->assertSee("/storage/portfolios/{$portfolio->id}/projects/project.webp", false);
+        $response->assertSee('/portfolio-media/portfolios/1/logo/logo.webp', false);
+        $response->assertSee('/portfolio-media/portfolios/1/favicon/icon.webp', false);
+        $response->assertSee("/portfolio-media/portfolios/{$portfolio->id}/projects/project.webp", false);
         $response->assertSee("/portfolio/{$portfolio->slug}/contact/send-email", false);
         $response->assertDontSee(config('app.url').'/storage/portfolios', false);
+    }
+
+    public function test_custom_domain_can_load_its_media_but_not_another_tenants_media(): void
+    {
+        Storage::fake('public');
+
+        $jawad = $this->tenant('jawad.example', 'jawad');
+        $other = $this->tenant('other.example', 'other');
+        $jawadPath = "portfolios/{$jawad->id}/projects/image.webp";
+        $otherPath = "portfolios/{$other->id}/projects/image.webp";
+        Storage::disk('public')->put($jawadPath, 'jawad image');
+        Storage::disk('public')->put($otherPath, 'other image');
+
+        $this->get("http://jawad.example/portfolio-media/{$jawadPath}")->assertOk();
+        $this->get("http://jawad.example/portfolio-media/{$otherPath}")->assertNotFound();
     }
 
     public function test_resume_download_is_scoped_to_the_custom_domain_portfolio(): void

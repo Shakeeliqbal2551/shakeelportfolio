@@ -20,10 +20,9 @@ trait HasResolvableFileUrl
         }
 
         if (str_starts_with($path, 'portfolios/')) {
-            // Keep local public-disk media on the current host. The disk URL is
-            // based on APP_URL, which belongs to the platform and would send a
-            // custom-domain tenant's visitors to another tenant's hostname.
-            return '/storage/'.ltrim($path, '/');
+            // Serve uploads through Laravel instead of relying on a public
+            // storage symlink being available in every custom domain's webroot.
+            return '/portfolio-media/'.ltrim($path, '/');
         }
 
         // Static portfolio images were converted from PNG/JPG to WebP. Some
