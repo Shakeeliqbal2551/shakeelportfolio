@@ -8,13 +8,13 @@
     @php
         $seoTitle = $portfolio->site_title ?: ($portfolio->about?->title ?: 'Portfolio');
         $seoDescription = $portfolio->meta_description ?: ($portfolio->about?->bio ?: '');
-        $seoImage = $portfolio->about?->profile_image_url ?: asset('img/default-profile-avatar.png');
+        $seoImage = url($portfolio->about?->profile_image_url ?: '/img/default-profile-avatar.png');
         // Dedicated 1200x630 (1.91:1) share image — social scrapers crop
         // square/portrait photos awkwardly, so og:image/twitter:image use
         // this instead of the raw profile photo used for JSON-LD/Person.
         // Falls back to the platform's generic branded image when a tenant
         // hasn't uploaded their own yet.
-        $ogImage = $portfolio->og_image_url ?: asset('img/og-default.jpg');
+        $ogImage = url($portfolio->og_image_url ?: '/img/og-default.jpg');
         // On a verified tenant custom domain the portfolio is served at "/"
         // regardless of slug, so the canonical URL should be the domain root.
         $isDefaultPortfolioForNav = $portfolio->isDefault() || request()->attributes->has('resolvedPortfolio');
@@ -58,7 +58,7 @@
     <link rel="llms.txt" href="{{ route('llms-txt') }}" />
 
     <!-- Favicon -->
-    <link rel="shortcut icon" href="{{ asset('img/logo/slogo.png') }}" type="image/png" />
+    <link rel="icon" href="{{ $portfolio->favicon_url ?: '/img/logo/slogo.png' }}" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -953,6 +953,17 @@
         .portfolio-grid .item:hover .abs_img { transform: scale(1.06); }
         .portfolio-grid .item .img_holder::after { display: none; }
 
+        /* Modal screenshots should show the complete uploaded image rather
+           than the legacy theme's fixed-height, 50%-cropped background. */
+        .resumo_fn_modalbox .img_holder img {
+            display: block;
+            width: 100%;
+            height: auto;
+            margin-bottom: 0;
+            opacity: 1 !important;
+        }
+        .resumo_fn_modalbox .img_holder .abs_img { display: none; }
+
         .portfolio-grid .item .title_holder {
             position: static !important;
             padding: 22px 10px 0 !important;
@@ -1428,8 +1439,8 @@
 <body>
 
     <script>
-        window.portfolioLogVisitorUrl = @json(route('portfolio.contact.log', $portfolio->slug));
-        window.portfolioDurationUrl = @json(route('portfolio.contact.duration', $portfolio->slug));
+        window.portfolioLogVisitorUrl = @json(route('portfolio.contact.log', $portfolio->slug, false));
+        window.portfolioDurationUrl = @json(route('portfolio.contact.duration', $portfolio->slug, false));
     </script>
 
     <!-- Wrapper All -->
@@ -1678,7 +1689,7 @@
                                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
                                                 </a>
                                                 @if ($about?->resume_url)
-                                                    <a href="{{ $about->resume_url }}" download class="btn-ghost-inline">
+                                                    <a href="{{ route('portfolio.resume.download', $portfolio, false) }}" download class="btn-ghost-inline">
                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
                                                         Download CV
                                                     </a>
@@ -2017,8 +2028,8 @@
                                             $imageAlt = $project->image_alt ?: ($project->title.' — screenshot');
                                             $primaryTag = $project->tags[0] ?? null;
                                             $caseStudyUrl = $isDefaultPortfolioForNav
-                                                ? route('work.show', $project->slug)
-                                                : route('portfolio.work.show', [$portfolio, $project->slug]);
+                                                ? route('work.show', $project->slug, false)
+                                                : route('portfolio.work.show', [$portfolio, $project->slug], false);
                                         @endphp
                                         <div class="item modal_item" data-index="{{ $loop->iteration }}" data-category="{{ $categoryAttr }}">
                                             <div class="img_holder">
@@ -2179,7 +2190,8 @@
                                 <!-- Contact Form -->
                                 <form class="contact_form" id="contactForm" action="/" method="post" autocomplete="off"
                                     data-email="{{ $portfolio->contact_email }}"
-                                    data-action-url="{{ route('portfolio.contact.send', $portfolio->slug) }}">
+                                    data-action-url="{{ route('portfolio.contact.send', $portfolio->slug, false) }}">
+                                    @csrf
 
                                     <!--
                                     Don't remove below code in avoid to work contact form properly.

@@ -18,6 +18,7 @@ $(document).ready(function () {
             type: 'POST',
             dataType: 'json',
             data: {
+                _token: $('#contactForm input[name="_token"]').val(),
                 name: name,
                 email: email,
                 phone: phone,

@@ -20,6 +20,7 @@ class Portfolio extends Model
         'slug',
         'theme',
         'logo_path',
+        'favicon_path',
         'site_title',
         'meta_description',
         'og_image_path',
@@ -76,6 +77,11 @@ class Portfolio extends Model
     public function getLogoUrlAttribute(): ?string
     {
         return static::resolveFileUrl($this->logo_path);
+    }
+
+    public function getFaviconUrlAttribute(): ?string
+    {
+        return static::resolveFileUrl($this->favicon_path);
     }
 
     public function user(): BelongsTo

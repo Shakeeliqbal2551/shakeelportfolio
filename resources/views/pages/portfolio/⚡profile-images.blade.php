@@ -36,7 +36,7 @@ new class extends Component {
     public function save(): void
     {
         $validated = $this->validate([
-            'image' => 'required|image|max:2048',
+            'image' => 'required|image|max:5120',
             'alt_text' => 'nullable|string|max:255',
         ]);
 
@@ -95,11 +95,15 @@ new class extends Component {
         <flux:heading size="lg">{{ __('Add a Photo') }}</flux:heading>
 
         <flux:input wire:model="image" :label="__('Image')" type="file" accept="image/*" />
+        @if ($image)
+            <img src="{{ $image->temporaryUrl() }}" alt="{{ __('Selected profile photo preview') }}" class="h-24 w-24 rounded-lg object-cover">
+        @endif
         <flux:input wire:model="alt_text" :label="__('Alt Text (for SEO)')" type="text" placeholder="{{ __('e.g. Jane Doe — Senior Laravel Developer') }}" />
 
-        <flux:button variant="primary" type="submit">
+        <flux:button variant="primary" type="submit" wire:loading.attr="disabled" wire:target="image">
             {{ __('Upload') }}
         </flux:button>
+        <flux:text wire:loading wire:target="image">{{ __('Preparing image…') }}</flux:text>
     </form>
 
     <div class="mt-8 space-y-3">

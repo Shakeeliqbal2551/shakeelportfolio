@@ -80,7 +80,7 @@ new class extends Component {
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'details' => 'nullable|string',
-            'image' => 'nullable|image|max:2048',
+            'image' => 'nullable|image|max:5120',
             'image_alt' => 'nullable|string|max:255',
             'tags' => 'nullable|string',
             'external_link' => 'nullable|url|max:255',
@@ -240,7 +240,9 @@ new class extends Component {
 
             <div>
                 <flux:input wire:model="image" :label="__('Image')" type="file" accept="image/*" />
-                @if ($existingImagePath)
+                @if ($image)
+                    <img src="{{ $image->temporaryUrl() }}" alt="{{ __('New project image preview') }}" class="mt-2 h-24 w-24 rounded-lg object-cover">
+                @elseif ($existingImagePath)
                     <img src="{{ \App\Models\Project::resolveFileUrl($existingImagePath) }}" alt="{{ __('Current image') }}" class="mt-2 h-24 w-24 rounded-lg object-cover">
                 @endif
             </div>
@@ -264,7 +266,7 @@ new class extends Component {
                     <flux:button variant="filled">{{ __('Cancel') }}</flux:button>
                 </flux:modal.close>
 
-                <flux:button variant="primary" type="submit">{{ __('Save') }}</flux:button>
+                <flux:button variant="primary" type="submit" wire:loading.attr="disabled" wire:target="image">{{ __('Save') }}</flux:button>
             </div>
         </form>
     </flux:modal>

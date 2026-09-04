@@ -2,7 +2,7 @@
     $isDefaultPortfolio = $portfolio->isDefault() || request()->attributes->has('resolvedPortfolio');
     $seoTitle = 'Blog — '.($portfolio->site_title ?: $portfolio->user?->name);
     $seoDescription = $portfolio->blog_meta_description ?: 'Articles and write-ups from '.$portfolio->user?->name;
-    $seoImage = $portfolio->og_image_url ?: asset('img/og-default.jpg');
+    $seoImage = url($portfolio->og_image_url ?: '/img/og-default.jpg');
     $canonicalUrl = $isDefaultPortfolio ? route('blog.index') : route('portfolio.blog.index', $portfolio);
     $homeUrl = $isDefaultPortfolio ? url('/') : route('portfolio.show', $portfolio);
 

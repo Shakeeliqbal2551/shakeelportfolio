@@ -18,6 +18,8 @@ new class extends Component {
     public ?string $meta_description = null;
     public $logo = null;
     public ?string $existingLogoPath = null;
+    public $favicon = null;
+    public ?string $existingFaviconPath = null;
     public $og_image = null;
     public ?string $existingOgImagePath = null;
     public ?string $blog_meta_description = null;
@@ -61,6 +63,7 @@ new class extends Component {
         $this->site_title = $portfolio->site_title;
         $this->meta_description = $portfolio->meta_description;
         $this->existingLogoPath = $portfolio->logo_path;
+        $this->existingFaviconPath = $portfolio->favicon_path;
         $this->existingOgImagePath = $portfolio->og_image_path;
         $this->blog_meta_description = $portfolio->blog_meta_description;
 
@@ -115,6 +118,17 @@ new class extends Component {
         $this->logo = null;
     }
 
+    public function removeFavicon(): void
+    {
+        if ($this->portfolio->favicon_path) {
+            Storage::disk('public')->delete($this->portfolio->favicon_path);
+            $this->portfolio->update(['favicon_path' => null]);
+        }
+
+        $this->existingFaviconPath = null;
+        $this->favicon = null;
+    }
+
     public function save(): void
     {
         $validated = $this->validate([
@@ -122,6 +136,7 @@ new class extends Component {
             'site_title' => 'required|string|max:60',
             'meta_description' => 'nullable|string|max:160',
             'logo' => 'nullable|image|max:2048',
+            'favicon' => 'nullable|image|max:1024',
             'og_image' => 'nullable|image|max:4096',
             'blog_meta_description' => 'nullable|string|max:160',
             'hero_badge_text' => 'nullable|string|max:255',
@@ -149,7 +164,7 @@ new class extends Component {
             fn ($item) => filled($item)
         ));
 
-        unset($validated['logo'], $validated['og_image']);
+        unset($validated['logo'], $validated['favicon'], $validated['og_image']);
 
         if ($this->logo) {
             if ($this->portfolio->logo_path) {
@@ -157,6 +172,14 @@ new class extends Component {
             }
 
             $validated['logo_path'] = CompressesUploadedImages::store($this->logo, "portfolios/{$this->portfolio->id}/logo");
+        }
+
+        if ($this->favicon) {
+            if ($this->portfolio->favicon_path) {
+                Storage::disk('public')->delete($this->portfolio->favicon_path);
+            }
+
+            $validated['favicon_path'] = CompressesUploadedImages::store($this->favicon, "portfolios/{$this->portfolio->id}/favicon");
         }
 
         if ($this->og_image) {
@@ -169,8 +192,10 @@ new class extends Component {
 
         $this->portfolio->update($validated);
         $this->existingLogoPath = $this->portfolio->logo_path;
+        $this->existingFaviconPath = $this->portfolio->favicon_path;
         $this->existingOgImagePath = $this->portfolio->og_image_path;
         $this->logo = null;
+        $this->favicon = null;
         $this->og_image = null;
 
         $this->dispatch('portfolio-settings-updated');
@@ -209,6 +234,28 @@ new class extends Component {
             <flux:select :label="__('Theme')" disabled>
                 <flux:select.option selected>{{ __('Default') }}</flux:select.option>
             </flux:select>
+        </div>
+
+        <flux:separator />
+
+        <div class="space-y-4">
+            <div>
+                <flux:heading size="lg">{{ __('Favicon') }}</flux:heading>
+                <flux:subheading>{{ __('Shown in browser tabs and bookmarks for your domain.') }}</flux:subheading>
+            </div>
+
+            @if ($existingFaviconPath && ! $favicon)
+                <img src="{{ \App\Models\Portfolio::resolveFileUrl($existingFaviconPath) }}" alt="{{ __('Current favicon') }}" class="h-12 w-12 rounded border border-zinc-200 object-contain dark:border-zinc-700">
+            @elseif ($favicon)
+                <img src="{{ $favicon->temporaryUrl() }}" alt="{{ __('New favicon preview') }}" class="h-12 w-12 rounded border border-zinc-200 object-contain dark:border-zinc-700">
+            @endif
+
+            <flux:input wire:model="favicon" :label="__('Upload Favicon')" type="file" accept="image/png,image/jpeg,image/webp,image/gif"
+                :description="__('Recommended: a square image, at least 64×64px, up to 1 MB.')" />
+
+            @if ($existingFaviconPath)
+                <flux:button size="sm" variant="subtle" wire:click="removeFavicon">{{ __('Remove current favicon') }}</flux:button>
+            @endif
         </div>
 
         <flux:separator />

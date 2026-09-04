@@ -2,8 +2,6 @@
 
 namespace App\Models\Concerns;
 
-use Illuminate\Support\Facades\Storage;
-
 /**
  * Resolves a stored file path (resume, image, avatar, etc.) into a public URL.
  *
@@ -22,7 +20,10 @@ trait HasResolvableFileUrl
         }
 
         if (str_starts_with($path, 'portfolios/')) {
-            return Storage::disk('public')->url($path);
+            // Keep local public-disk media on the current host. The disk URL is
+            // based on APP_URL, which belongs to the platform and would send a
+            // custom-domain tenant's visitors to another tenant's hostname.
+            return '/storage/'.ltrim($path, '/');
         }
 
         // Static portfolio images were converted from PNG/JPG to WebP. Some
@@ -37,6 +38,6 @@ trait HasResolvableFileUrl
             }
         }
 
-        return asset($path);
+        return '/'.ltrim($path, '/');
     }
 }

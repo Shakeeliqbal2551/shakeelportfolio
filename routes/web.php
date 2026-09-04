@@ -3,6 +3,7 @@
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\PortfolioContactController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\ResumeController;
 use App\Http\Controllers\SitemapController;
 use App\Livewire\PortfolioPage;
 use App\Models\Portfolio;
@@ -19,6 +20,7 @@ Route::get('/', PortfolioPage::class)->name('home');
 Route::get('/portfolio/'.Portfolio::DEFAULT_SLUG, fn () => redirect()->route('home', status: 301));
 
 Route::get('/portfolio/{portfolio:slug}', PortfolioPage::class)->name('portfolio.show');
+Route::get('/portfolio/{portfolio:slug}/resume', ResumeController::class)->name('portfolio.resume.download');
 
 Route::get('/portfolio/{portfolio:slug}/contact/log-visitor', [PortfolioContactController::class, 'logVisitor'])->name('portfolio.contact.log');
 Route::post('/portfolio/{portfolio:slug}/contact/record-duration', [PortfolioContactController::class, 'recordDuration'])->name('portfolio.contact.duration');
