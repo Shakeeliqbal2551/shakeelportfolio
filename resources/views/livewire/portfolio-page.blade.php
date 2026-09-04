@@ -1329,6 +1329,29 @@
         .right_top { position: relative; }
         .right_top .img_holder {
             position: relative !important;
+            width: 100%;
+            aspect-ratio: 1 / 1;
+            overflow: hidden;
+            min-height: 0;
+        }
+        .right_top .img_holder > img {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            min-width: 0;
+            object-fit: cover;
+            object-position: center;
+        }
+        .right_top .img_holder .abs_img {
+            background-size: cover;
+            background-position: center;
+        }
+        @media (min-width: 1041px) {
+            .right_top .img_holder {
+                width: min(100%, calc(100vh - 360px));
+                margin-inline: auto;
+            }
         }
         .right_top .title_holder {
             text-align: center !important;
