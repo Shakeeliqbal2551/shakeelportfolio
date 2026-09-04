@@ -35,6 +35,7 @@ class TenantMediaIsolationTest extends TestCase
         $response->assertOk();
         $response->assertSee('/portfolio-media/portfolios/1/logo/logo.webp', false);
         $response->assertSee('/portfolio-media/portfolios/1/favicon/icon.webp', false);
+        $response->assertSee('/portfolio-media/portfolios/1/favicon/icon.webp?v=', false);
         $response->assertSee("/portfolio-media/portfolios/{$portfolio->id}/projects/project.webp", false);
         $response->assertSee("/portfolio/{$portfolio->slug}/contact/send-email", false);
         $response->assertDontSee(config('app.url').'/storage/portfolios', false);
@@ -76,6 +77,28 @@ class TenantMediaIsolationTest extends TestCase
 
         $this->get("http://jawad.example/portfolio/{$other->slug}/resume")
             ->assertNotFound();
+    }
+
+    public function test_contact_form_saves_and_sends_to_the_current_tenant(): void
+    {
+        config(['mail.default' => 'array']);
+
+        $portfolio = $this->tenant('jawad.example', 'jawad', [
+            'contact_email' => 'jawad@example.com',
+        ]);
+
+        $response = $this->postJson("http://jawad.example/portfolio/{$portfolio->slug}/contact/send-email", [
+            'name' => 'Site Visitor',
+            'email' => 'visitor@example.com',
+            'phone' => '+92 300 0000000',
+            'message' => 'I would like to discuss a project.',
+        ]);
+
+        $response->assertOk()->assertJson(['status' => 'success']);
+        $this->assertDatabaseHas('contact_messages', [
+            'portfolio_id' => $portfolio->id,
+            'email' => 'visitor@example.com',
+        ]);
     }
 
     private function tenant(string $host, string $slug, array $attributes = []): Portfolio

@@ -40,6 +40,13 @@ class Portfolio extends Model
         'trust_flags',
         'contact_email',
         'whatsapp_number',
+        'smtp_host',
+        'smtp_port',
+        'smtp_username',
+        'smtp_password',
+        'smtp_encryption',
+        'smtp_from_address',
+        'smtp_from_name',
     ];
 
     protected function casts(): array
@@ -47,6 +54,8 @@ class Portfolio extends Model
         return [
             'hero_reassurance_items' => 'array',
             'hero_stats' => 'array',
+            'smtp_password' => 'encrypted',
+            'smtp_port' => 'integer',
         ];
     }
 

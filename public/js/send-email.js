@@ -1,18 +1,17 @@
 $(document).ready(function () {
-    $('#send_message').on('click', function (e) {
-        e.preventDefault();
-        
+    $('#send_message').on('click', function (event) {
+        event.preventDefault();
+
         const name = $('#name').val().trim();
         const email = $('#email').val().trim();
         const phone = $('#phone').val().trim();
         const message = $('#message').val().trim();
-        
-        // Validate - only name, email, and message are required
+
         if (!name || !email || !message) {
-            $('#formStatus').html('<span style="color:red; font-weight: bold;">❌ Please fill all required fields</span>');
+            $('#formStatus').html('<span style="color:red; font-weight:bold;">Please fill all required fields.</span>');
             return false;
         }
-        
+
         $.ajax({
             url: $('#contactForm').data('action-url'),
             type: 'POST',
@@ -25,22 +24,22 @@ $(document).ready(function () {
                 message: message
             },
             success: function (response) {
-                if (response.status === 'success') {
-                    $('#formStatus').html('<span style="color:green; font-weight: bold;">✅ ' + response.message + '</span>');
-                    $('#name').val('');
-                    $('#email').val('');
-                    $('#phone').val('');
-                    $('#message').val('');
-                    setTimeout(function() {
-                        $('#formStatus').html('');
-                    }, 5000);
-                } else {
-                    $('#formStatus').html('<span style="color:red; font-weight: bold;">❌ ' + response.message + '</span>');
-                }
+                $('#formStatus').html('<span style="color:green; font-weight:bold;">' + response.message + '</span>');
+                $('#contactForm').trigger('reset');
+
+                setTimeout(function () {
+                    $('#formStatus').html('');
+                }, 5000);
             },
-            error: function (xhr, status, error) {
-                $('#formStatus').html('<span style="color:red; font-weight: bold;">❌ An error occurred. Please try again.</span>');
+            error: function (xhr) {
+                const errorMessage = xhr.responseJSON && xhr.responseJSON.message
+                    ? xhr.responseJSON.message
+                    : 'An error occurred. Please try again.';
+
+                $('#formStatus').html('<span style="color:red; font-weight:bold;">' + errorMessage + '</span>');
             }
         });
+
+        return false;
     });
 });

@@ -49,6 +49,13 @@ new class extends Component {
     public ?string $trust_flags = null;
     public ?string $contact_email = null;
     public ?string $whatsapp_number = null;
+    public ?string $smtp_host = null;
+    public ?int $smtp_port = null;
+    public ?string $smtp_username = null;
+    public string $smtp_password = '';
+    public string $smtp_encryption = 'tls';
+    public ?string $smtp_from_address = null;
+    public ?string $smtp_from_name = null;
 
     public function mount(): void
     {
@@ -94,6 +101,12 @@ new class extends Component {
         $this->trust_flags = $portfolio->trust_flags;
         $this->contact_email = $portfolio->contact_email;
         $this->whatsapp_number = $portfolio->whatsapp_number;
+        $this->smtp_host = $portfolio->smtp_host;
+        $this->smtp_port = $portfolio->smtp_port;
+        $this->smtp_username = $portfolio->smtp_username;
+        $this->smtp_encryption = $portfolio->smtp_encryption ?: 'tls';
+        $this->smtp_from_address = $portfolio->smtp_from_address;
+        $this->smtp_from_name = $portfolio->smtp_from_name;
     }
 
     public function removeOgImage(): void
@@ -157,6 +170,13 @@ new class extends Component {
             'trust_flags' => 'nullable|string|max:255',
             'contact_email' => 'nullable|email|max:255',
             'whatsapp_number' => 'nullable|string|max:255',
+            'smtp_host' => 'nullable|string|max:255',
+            'smtp_port' => 'nullable|required_with:smtp_host|integer|min:1|max:65535',
+            'smtp_username' => 'nullable|string|max:255',
+            'smtp_password' => 'nullable|string|max:1024',
+            'smtp_encryption' => 'required_with:smtp_host|in:tls,ssl,none',
+            'smtp_from_address' => 'nullable|required_with:smtp_host|email|max:255',
+            'smtp_from_name' => 'nullable|string|max:255',
         ]);
 
         $validated['hero_reassurance_items'] = array_values(array_filter(
@@ -165,6 +185,10 @@ new class extends Component {
         ));
 
         unset($validated['logo'], $validated['favicon'], $validated['og_image']);
+
+        if ($this->smtp_password === '') {
+            unset($validated['smtp_password']);
+        }
 
         if ($this->logo) {
             if ($this->portfolio->logo_path) {
@@ -371,6 +395,38 @@ new class extends Component {
             <flux:input wire:model="trust_flags" :label="__('Trust Flags')" type="text" />
             <flux:input wire:model="contact_email" :label="__('Contact Email')" type="email" />
             <flux:input wire:model="whatsapp_number" :label="__('WhatsApp Number')" type="text" />
+        </div>
+
+        <flux:separator />
+
+        <div class="space-y-6">
+            <div>
+                <flux:heading size="lg">{{ __('Contact Form Email (SMTP)') }}</flux:heading>
+                <flux:subheading>{{ __('Messages are delivered to the Contact Email above. Enter the outgoing SMTP details supplied by your email provider.') }}</flux:subheading>
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <flux:input wire:model="smtp_host" :label="__('SMTP Host')" type="text" placeholder="smtp.gmail.com" />
+                <flux:input wire:model="smtp_port" :label="__('SMTP Port')" type="number" placeholder="587" />
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <flux:input wire:model="smtp_username" :label="__('SMTP Username')" type="text" autocomplete="off" />
+                <flux:input wire:model="smtp_password" :label="__('SMTP Password / App Password')" type="password" autocomplete="new-password"
+                    :placeholder="$portfolio->smtp_password ? __('Leave blank to keep existing password') : ''" />
+            </div>
+
+            <div class="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <flux:select wire:model="smtp_encryption" :label="__('Encryption')">
+                    <flux:select.option value="tls">TLS / STARTTLS</flux:select.option>
+                    <flux:select.option value="ssl">SSL</flux:select.option>
+                    <flux:select.option value="none">{{ __('None') }}</flux:select.option>
+                </flux:select>
+                <flux:input wire:model="smtp_from_address" :label="__('Sender Email')" type="email" placeholder="you@example.com" />
+            </div>
+
+            <flux:input wire:model="smtp_from_name" :label="__('Sender Name')" type="text" :placeholder="$site_title" />
+            <flux:text class="text-zinc-500">{{ __('For Gmail, enable two-step verification and use a Google App Password instead of your normal password.') }}</flux:text>
         </div>
 
         <div class="flex items-center gap-4">

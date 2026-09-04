@@ -239,6 +239,30 @@ class PortfolioDashboardSmokeTest extends TestCase
         $this->assertEquals('Years', $this->portfolio->hero_stats[0]['label']);
     }
 
+    public function test_tenant_can_save_encrypted_smtp_settings(): void
+    {
+        \Livewire\Livewire::test('pages::portfolio.settings')
+            ->set('contact_email', 'inbox@example.com')
+            ->set('smtp_host', 'smtp.example.com')
+            ->set('smtp_port', 587)
+            ->set('smtp_username', 'mailer@example.com')
+            ->set('smtp_password', 'secret-app-password')
+            ->set('smtp_encryption', 'tls')
+            ->set('smtp_from_address', 'mailer@example.com')
+            ->set('smtp_from_name', 'Test Portfolio')
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->portfolio->refresh();
+
+        $this->assertSame('smtp.example.com', $this->portfolio->smtp_host);
+        $this->assertSame('secret-app-password', $this->portfolio->smtp_password);
+        $this->assertNotSame(
+            'secret-app-password',
+            \Illuminate\Support\Facades\DB::table('portfolios')->where('id', $this->portfolio->id)->value('smtp_password')
+        );
+    }
+
     public function test_og_image_upload_and_removal(): void
     {
         Storage::fake('public');
@@ -286,6 +310,31 @@ class PortfolioDashboardSmokeTest extends TestCase
 
         $this->portfolio->refresh();
         $this->assertNull($this->portfolio->logo_path);
+        Storage::disk('public')->assertMissing($oldPath);
+    }
+
+    public function test_favicon_upload_and_removal(): void
+    {
+        Storage::fake('public');
+
+        $image = UploadedFile::fake()->image('favicon.png', 128, 128);
+
+        \Livewire\Livewire::test('pages::portfolio.settings')
+            ->set('favicon', $image)
+            ->call('save')
+            ->assertHasNoErrors();
+
+        $this->portfolio->refresh();
+        $this->assertNotNull($this->portfolio->favicon_path);
+        Storage::disk('public')->assertExists($this->portfolio->favicon_path);
+
+        $oldPath = $this->portfolio->favicon_path;
+
+        \Livewire\Livewire::test('pages::portfolio.settings')
+            ->call('removeFavicon');
+
+        $this->portfolio->refresh();
+        $this->assertNull($this->portfolio->favicon_path);
         Storage::disk('public')->assertMissing($oldPath);
     }
 

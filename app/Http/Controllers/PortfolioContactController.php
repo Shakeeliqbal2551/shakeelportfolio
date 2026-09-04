@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Portfolio;
+use App\Services\TenantMailer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Validator;
 use Throwable;
 
@@ -122,7 +122,6 @@ class PortfolioContactController extends Controller
             ], 500);
         }
 
-        $recipient = $portfolio->contact_email ?: (string) config('mail.portfolio_contact_email', 'contact@shakeeliqbal.com');
         $mapLink = ($visitor['latitude'] !== '' && $visitor['longitude'] !== '')
             ? "https://maps.google.com/?q={$visitor['latitude']},{$visitor['longitude']}"
             : null;
@@ -135,15 +134,15 @@ class PortfolioContactController extends Controller
         ])->render();
 
         try {
-            Mail::html($html, function ($message) use ($recipient, $validated) {
-                $message->to($recipient)
-                    ->replyTo($validated['email'], $validated['name'])
-                    ->subject('New Message via Portfolio Contact Form');
-            });
-        } catch (Throwable) {
+            app(TenantMailer::class)->sendContact($portfolio, $html, $validated);
+        } catch (Throwable $exception) {
+            report($exception);
+
             return response()->json([
                 'status' => 'error',
-                'message' => 'Email sending failed. Please try again.',
+                'message' => $exception instanceof \RuntimeException
+                    ? $exception->getMessage()
+                    : 'Email sending failed. Please try again.',
             ], 500);
         }
 

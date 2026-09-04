@@ -58,7 +58,13 @@
     <link rel="llms.txt" href="{{ route('llms-txt') }}" />
 
     <!-- Favicon -->
-    <link rel="icon" href="{{ $portfolio->favicon_url ?: '/img/logo/slogo.png' }}" />
+    @php
+        $faviconUrl = $portfolio->favicon_url
+            ? $portfolio->favicon_url.'?v='.$portfolio->updated_at->timestamp
+            : '/img/logo/slogo.png';
+    @endphp
+    <link rel="icon" href="{{ $faviconUrl }}" sizes="any" />
+    <link rel="shortcut icon" href="{{ $faviconUrl }}" />
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1330,7 +1336,7 @@
         .right_top .img_holder {
             position: relative !important;
             width: 100%;
-            aspect-ratio: 1 / 1;
+            aspect-ratio: 4 / 5;
             overflow: hidden;
             min-height: 0;
         }
@@ -1349,7 +1355,7 @@
         }
         @media (min-width: 1041px) {
             .right_top .img_holder {
-                width: min(100%, calc(100vh - 360px));
+                width: min(100%, calc((100vh - 360px) * 0.8));
                 margin-inline: auto;
             }
         }
@@ -2518,7 +2524,7 @@
     <script src="{{ asset('js/waypoints.js') }}?ver=3"></script>
     <script src="{{ asset('js/init.js') }}?ver=3"></script>
     <!-- /Scripts -->
-<script src="{{ asset('js/send-email.js') }}?ver=3"></script>
+<script src="{{ asset('js/send-email.js') }}?ver=4"></script>
 </body>
 
 </html>
